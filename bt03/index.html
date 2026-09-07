@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Phạm Hồng Hải Đăng">
+    <meta name="description" content="Trang web chia sẻ trải nghiệm mô hình AI local - Tác giả: Phạm Hồng Hải Đăng">
+    <title>Trang web chia sẻ trải nghiệm mô hình AI local - Tác giả: Phạm Hồng Hải Đăng</title>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-primary: #f8fafc;
+            --bg-surface: #ffffff;
+            --bg-card: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --accent-color: #2563eb;
+            --accent-hover: #1d4ed8;
+            --accent-light: #eff6ff;
+            --warning-bg: #fffbeb;
+            --warning-border: #fcd34d;
+            --warning-text: #92400e;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body.dark-mode {
+            --bg-primary: #0b0f19;
+            --bg-surface: #111827;
+            --bg-card: #1f2937;
+            --text-primary: #f9fafb;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --border-color: #374151;
+            --accent-color: #3b82f6;
+            --accent-hover: #60a5fa;
+            --accent-light: rgba(59, 130, 246, 0.12);
+            --warning-bg: rgba(245, 158, 11, 0.1);
+            --warning-border: #b45309;
+            --warning-text: #fcd34d;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.6;
+            transition: var(--transition);
+        }
+
+        /* HEADER & NAVIGATION */
+        header {
+            background-color: var(--bg-surface);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .site-branding h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .site-branding h1 i {
+            color: var(--accent-color);
+        }
+
+        .site-branding p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .site-branding .author-name {
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        nav button {
+            background-color: var(--bg-card);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 0.6rem 1rem;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        nav button i {
+            font-size: 1rem;
+            color: var(--accent-color);
+            transition: var(--transition);
+        }
+
+        nav button:hover {
+            background-color: var(--accent-light);
+            color: var(--accent-color);
+            border-color: var(--accent-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        nav button#btn-theme {
+            padding: 0.6rem 0.85rem;
+            border-radius: 50%;
+            aspect-ratio: 1/1;
+        }
+
+        /* MAIN CONTENT AREA */
+        main {
+            flex: 1;
+            max-width: 1200px;
+            width: 100%;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        /* SECTION: GRID WITH SIDEBAR & ARTICLE */
+        section.content-section {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        /* SIDEBAR */
+        sidebar, aside.sidebar {
+            display: block;
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 5.5rem;
+            transition: var(--transition);
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-header i {
+            color: #eab308;
+            font-size: 1.25rem;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .sidebar-quote {
+            background-color: var(--warning-bg);
+            border-left: 4px solid var(--warning-border);
+            padding: 1rem 1.2rem;
+            border-radius: 8px;
+            color: var(--warning-text);
+            font-weight: 500;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 1.25rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .sidebar-detail {
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+            line-height: 1.6;
+        }
+
+        .sidebar-badge-list {
+            margin-top: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .badge-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            background: var(--bg-card);
+            padding: 0.45rem 0.75rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .badge-item i {
+            color: #ef4444;
+        }
+
+        /* ARTICLE */
+        article {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .article-hero {
+            margin-bottom: 1.75rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .article-hero h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .article-hero p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        /* PAPER CARDS */
+        .papers-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .paper-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .paper-card:hover {
+            border-color: var(--accent-color);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .paper-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .paper-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .arxiv-tag {
+            background-color: #b31b1b;
+            color: #ffffff;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+            white-space: nowrap;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .paper-authors {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .paper-authors i {
+            margin-right: 0.35rem;
+        }
+
+        .paper-summary {
+            font-size: 0.92rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.25rem;
+            line-height: 1.6;
+        }
+
+        .paper-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px dashed var(--border-color);
+        }
+
+        .paper-topics {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .topic-pill {
+            background-color: var(--accent-light);
+            color: var(--accent-color);
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.2rem 0.6rem;
+            border-radius: 9999px;
+        }
+
+        .arxiv-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: var(--accent-color);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .arxiv-link:hover {
+            background-color: var(--accent-color);
+            color: #ffffff;
+            border-color: var(--accent-color);
+        }
+
+        /* FOOTER */
+        footer {
+            background-color: var(--bg-surface);
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
+            padding: 1.5rem 0;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .footer-meta time {
+            font-weight: 600;
+            color: var(--text-secondary);
+            background-color: var(--bg-card);
+            padding: 0.3rem 0.75rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        footer button#btn-ai-support {
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            padding: 0.75rem 1.4rem;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            transition: var(--transition);
+            box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.35);
+        }
+
+        footer button#btn-ai-support i {
+            font-size: 1.1rem;
+            animation: pulse-icon 2s infinite;
+        }
+
+        @keyframes pulse-icon {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        footer button#btn-ai-support:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px 0 rgba(124, 58, 237, 0.45);
+        }
+
+        /* MODAL / TOAST STYLING */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background-color: var(--bg-surface);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .toast i {
+            font-size: 1.25rem;
+            color: var(--accent-color);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 868px) {
+            section.content-section {
+                grid-template-columns: 1fr;
+            }
+
+            sidebar, aside.sidebar {
+                position: static;
+            }
+
+            .header-container, .footer-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            nav {
+                width: 100%;
+                justify-content: flex-start;
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER & NAV -->
+    <header>
+        <div class="header-container">
+            <div class="site-branding">
+                <h1><i class="fa-solid fa-microchip"></i> Trải Nghiệm AI Local</h1>
+                <p>Tác giả: <span class="author-name">Phạm Hồng Hải Đăng</span></p>
+            </div>
+
+            <!-- <nav> chứa 3 thẻ <button> (icon) với <i>: Số điện thoại, Email, Nút bật/tắt giao diện tối -->
+            <nav>
+                <button id="btn-phone" title="Gọi điện thoại liên hệ" onclick="showNotice('Số điện thoại: 0987 654 321')">
+                    <i class="fa-solid fa-phone"></i>
+                    <span>Số điện thoại</span>
+                </button>
+
+                <button id="btn-email" title="Gửi thư điện tử" onclick="showNotice('Email: phamhonghaidang@example.com')">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span>Email</span>
+                </button>
+
+                <button id="btn-theme" title="Chuyển chế độ sáng / tối" aria-label="Chuyển đổi giao diện">
+                    <i class="fa-solid fa-moon" id="theme-icon"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main>
+        <!-- <main> chứa <section> -->
+        <section class="content-section">
+            
+            <!-- <Sidebar> chứa văn bản yêu cầu -->
+            <aside class="sidebar" id="sidebar">
+                <sidebar>
+                    <div class="sidebar-header">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <h2>Góc Nhìn Thực Tế</h2>
+                    </div>
+
+                    <div class="sidebar-quote">
+                        những mô hình AI local đều có điểm chung là kém tin cậy về calling tool
+                    </div>
+
+                    <div class="sidebar-detail">
+                        <p>Khi triển khai các mô hình ngôn ngữ nhỏ (SLM) hoặc mô hình mã nguồn mở trên phần cứng cục bộ (Local Hardware/Edge Devices), việc trích xuất JSON có cấu trúc và thực hiện Function/Tool Calling thường gặp tỷ lệ sai sót cú pháp hoặc hallucination cao hơn đáng kể so với các mô hình đám mây đầu bảng.</p>
+                    </div>
+
+                    <div class="sidebar-badge-list">
+                        <div class="badge-item">
+                            <i class="fa-solid fa-circle-xmark"></i>
+                            <span>JSON syntax error thường gặp</span>
+                        </div>
+                        <div class="badge-item">
+                            <i class="fa-solid fa-circle-xmark"></i>
+                            <span>Bỏ sót tham số bắt buộc (arguments)</span>
+                        </div>
+                        <div class="badge-item">
+                            <i class="fa-solid fa-circle-xmark"></i>
+                            <span>Gọi sai hàm hoặc tự suy diễn API</span>
+                        </div>
+                    </div>
+                </sidebar>
+            </aside>
+
+            <!-- <article> chứa trích dẫn các liên kết arXiv về tổng quan AI Local -->
+            <article>
+                <div class="article-hero">
+                    <h2>Tổng Quan Các Nghiên Cứu Về Local AI & Tool Calling</h2>
+                    <p>Dưới đây là các tài liệu và bài báo cáo khoa học uy tín trích dẫn từ <strong>arXiv.org</strong> về mô hình AI cục bộ, On-Device LLM và khả năng gọi công cụ (Tool Calling / Function Calling):</p>
+                </div>
+
+                <div class="papers-list">
+
+                    <!-- Paper 1 -->
+                    <div class="paper-card">
+                        <div class="paper-header">
+                            <h3 class="paper-title">Small Language Models: A Survey</h3>
+                            <span class="arxiv-tag">arXiv:2411.03350</span>
+                        </div>
+                        <div class="paper-authors">
+                            <i class="fa-solid fa-user-group"></i> Tác giả: Xin Zhang, et al.
+                        </div>
+                        <div class="paper-summary">
+                            Bài tổng quan hệ thống hóa toàn diện về các mô hình ngôn ngữ kích thước nhỏ (SLMs) phục vụ triển khai cục bộ và tại biên (Local & Edge deployment). Nghiên cứu phân tích chuyên sâu về giới hạn kiến trúc tham số và hiệu năng thực thi các tác vụ reasoning, API calling.
+                        </div>
+                        <div class="paper-footer">
+                            <div class="paper-topics">
+                                <span class="topic-pill">Small Language Models</span>
+                                <span class="topic-pill">Edge AI</span>
+                                <span class="topic-pill">Local LLM</span>
+                            </div>
+                            <a href="https://arxiv.org/abs/2411.03350" target="_blank" rel="noopener noreferrer" class="arxiv-link">
+                                <span>Xem bài báo</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Paper 2 -->
+                    <div class="paper-card">
+                        <div class="paper-header">
+                            <h3 class="paper-title">Gorilla: Large Language Model Connected with Massive APIs</h3>
+                            <span class="arxiv-tag">arXiv:2305.15334</span>
+                        </div>
+                        <div class="paper-authors">
+                            <i class="fa-solid fa-user-group"></i> Tác giả: Shishir G. Patil, Tianjun Zhang, Xin Wang, et al. (UC Berkeley & Microsoft)
+                        </div>
+                        <div class="paper-summary">
+                            Công trình nền tảng về khả năng gọi Tool/API của các mô hình LLM. Nghiên cứu chỉ ra những điểm yếu cốt tử của các mô hình trong việc hallucination khi sinh gọi hàm, đồng thời đề xuất phương pháp Retrieval-Aware Fine-Tuning để nâng cao độ chính xác khi calling tool trên môi trường độc lập.
+                        </div>
+                        <div class="paper-footer">
+                            <div class="paper-topics">
+                                <span class="topic-pill">Tool Calling</span>
+                                <span class="topic-pill">API Synthesis</span>
+                                <span class="topic-pill">Hallucination Mitigation</span>
+                            </div>
+                            <a href="https://arxiv.org/abs/2305.15334" target="_blank" rel="noopener noreferrer" class="arxiv-link">
+                                <span>Xem bài báo</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Paper 3 -->
+                    <div class="paper-card">
+                        <div class="paper-header">
+                            <h3 class="paper-title">A Survey on Large Language Model based Autonomous Agents</h3>
+                            <span class="arxiv-tag">arXiv:2308.11432</span>
+                        </div>
+                        <div class="paper-authors">
+                            <i class="fa-solid fa-user-group"></i> Tác giả: Lei Wang, Chen Ma, Xueyang Feng, et al.
+                        </div>
+                        <div class="paper-summary">
+                            Khảo sát chuyên sâu về các Agent tự hành dựa trên LLM, phân tích cơ chế tương tác với môi trường bên ngoài thông qua việc sử dụng công cụ (Tool Utilization), bộ nhớ cục bộ và khả năng lập kế hoạch giải quyết vấn đề khi chạy trên các hệ thống tài nguyên hạn chế.
+                        </div>
+                        <div class="paper-footer">
+                            <div class="paper-topics">
+                                <span class="topic-pill">AI Agents</span>
+                                <span class="topic-pill">Tool Utilization</span>
+                                <span class="topic-pill">Planning & Reasoning</span>
+                            </div>
+                            <a href="https://arxiv.org/abs/2308.11432" target="_blank" rel="noopener noreferrer" class="arxiv-link">
+                                <span>Xem bài báo</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Paper 4 -->
+                    <div class="paper-card">
+                        <div class="paper-header">
+                            <h3 class="paper-title">A Survey on On-Device Machine Learning: An Edge Computing Perspective</h3>
+                            <span class="arxiv-tag">arXiv:1906.01230</span>
+                        </div>
+                        <div class="paper-authors">
+                            <i class="fa-solid fa-user-group"></i> Tác giả: J. Dhar, M. V. O. et al.
+                        </div>
+                        <div class="paper-summary">
+                            Báo cáo tổng quan về việc chạy các thuật toán trí tuệ nhân tạo trực tiếp trên thiết bị đầu cuối cá nhân (On-Device ML), đánh đổi giữa độ trễ, quyền riêng tư dữ liệu và năng lực tính toán khi không dựa vào dịch vụ đám mây.
+                        </div>
+                        <div class="paper-footer">
+                            <div class="paper-topics">
+                                <span class="topic-pill">On-Device AI</span>
+                                <span class="topic-pill">Edge Computing</span>
+                                <span class="topic-pill">Privacy-Preserving AI</span>
+                            </div>
+                            <a href="https://arxiv.org/abs/1906.01230" target="_blank" rel="noopener noreferrer" class="arxiv-link">
+                                <span>Xem bài báo</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </article>
+
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <!-- <footer> gồm <time> và <button><i> về nút gọi hỗ trợ AI ảo -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-meta">
+                <span>Cập nhật ngày:</span>
+                <time datetime="2026-09-07">
+                    <i class="fa-regular fa-calendar-check"></i>
+                    07/09/2026
+                </time>
+                <span>&copy; 2026 Phạm Hồng Hải Đăng</span>
+            </div>
+
+            <button id="btn-ai-support" onclick="callVirtualAIAssistant()">
+                <i class="fa-solid fa-headset"></i>
+                <span>Gọi hỗ trợ AI ảo</span>
+            </button>
+        </div>
+    </footer>
+
+    <!-- TOAST NOTIFICATION COMPONENT -->
+    <div id="toast" class="toast">
+        <i class="fa-solid fa-circle-info" id="toast-icon"></i>
+        <span id="toast-message">Thông báo</span>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Toggle Dark / Light Mode
+        const themeBtn = document.getElementById('btn-theme');
+        const themeIcon = document.getElementById('theme-icon');
+
+        // Kiểm tra cài đặt theme đã lưu hoặc mặc định của hệ thống
+        const savedTheme = localStorage.getItem('site-theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeIcon.classList.replace('fa-moon', 'fa-sun');
+        }
+
+        themeBtn.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            
+            if (isDark) {
+                themeIcon.classList.replace('fa-moon', 'fa-sun');
+                localStorage.setItem('site-theme', 'dark');
+                showToast('Đã chuyển sang giao diện tối', 'fa-moon');
+            } else {
+                themeIcon.classList.replace('fa-sun', 'fa-moon');
+                localStorage.setItem('site-theme', 'light');
+                showToast('Đã chuyển sang giao diện sáng', 'fa-sun');
+            }
+        });
+
+        // Hiển thị thông báo Toast
+        let toastTimeout;
+        function showToast(message, iconClass = 'fa-circle-info') {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-message');
+            const toastIcon = document.getElementById('toast-icon');
+
+            toastMsg.textContent = message;
+            toastIcon.className = `fa-solid ${iconClass}`;
+            toast.classList.add('show');
+
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function showNotice(msg) {
+            showToast(msg, 'fa-address-card');
+        }
+
+        // Chức năng gọi hỗ trợ AI ảo
+        function callVirtualAIAssistant() {
+            showToast('Đang kết nối trợ lý AI ảo... Xin vui lòng đợi trong giây lát!', 'fa-headset');
+        }
+    </script>
+</body>
+</html>
