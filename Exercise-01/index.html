@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sống Xanh Tối Giản - Responsive Typography Scale</title>
+    
+    <!-- Phông chữ cao cấp Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* =========================================================
+           1. HỆ THỐNG BIẾN CSS (CSS VARIABLES) - THIẾT KẾ CHUẨN HÓA
+           ========================================================= */
+        :root {
+            /* Hệ màu tương phản: Nâu be sang trọng & Xanh lá tự nhiên */
+            --bg-page: #f6f3ed;         /* Nền nâu be trang nhã */
+            --bg-card: #fbfaf7;         /* Nền thẻ nội dung be sáng */
+            --bg-accent: #ece6da;       /* Màu be điểm nhấn */
+            --color-heading: #1b4332;   /* Màu xanh lá rừng quý phái đồng nhất cho mọi tiêu đề */
+            --color-subheading: #2d6a4f;/* Xanh lá thảo mộc cho tiêu đề phụ */
+            --color-text: #413d39;      /* Nâu than trầm ấm cho văn bản dễ đọc */
+            --color-muted: #736d65;     /* Nâu nhạt cho ghi chú */
+            --color-border: #ded8cb;    /* Đường viền be tự nhiên */
+
+            /* Typography Scale dùng hoàn toàn bằng đơn vị rem (Màn hình lớn > 600px) */
+            --font-h1: 2.75rem;         /* Tiêu đề chính trang web */
+            --font-h2: 2.15rem;         /* Tiêu đề khu vực */
+            --font-h3: 1.65rem;         /* Tiêu đề phân mục */
+            --font-h4: 1.35rem;         /* Tiêu đề thẻ Card đồng nhất */
+            --font-p: 1.05rem;          /* Kích cỡ đoạn văn bản chuẩn */
+            --font-small: 0.875rem;     /* Kích cỡ chữ chú thích */
+
+            /* Chiều cao dòng (Line Height) theo tỷ lệ chuẩn */
+            --lh-heading: 1.3;
+            --lh-body: 1.7;
+
+            /* Khoảng cách chuẩn hóa */
+            --spacing-unit: 1rem;
+            --container-max-width: 75rem; /* 1200px */
+        }
+
+        /* =========================================================
+           2. ĐÁP ỨNG ĐỀ BÀI 1: TỰ GIẢM KÍCH THƯỚC KHI MÀN HÌNH < 600px
+           ========================================================= */
+        @media (max-width: 600px) {
+            :root {
+                --font-h1: 1.95rem;     /* Thu nhỏ tỷ lệ tiêu đề h1 trên di động */
+                --font-h2: 1.60rem;     /* Thu nhỏ tỷ lệ h2 */
+                --font-h3: 1.30rem;     /* Thu nhỏ tỷ lệ h3 */
+                --font-h4: 1.15rem;     /* Thu nhỏ tỷ lệ h4 */
+                --font-p: 0.95rem;      /* Thu nhỏ tỷ lệ đoạn văn bản */
+                --font-small: 0.80rem;  /* Thu nhỏ tỷ lệ văn bản phụ */
+                --spacing-unit: 0.75rem;
+            }
+
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        /* =========================================================
+           3. CẤU TRÚC GIAO DIỆN & TỐI GIẢN SANG TRỌNG
+           ========================================================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-page);
+            color: var(--color-text);
+            line-height: var(--lh-body);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Đồng nhất toàn bộ tiêu đề: Phông trang trọng, cùng màu xanh lá kiêng kị rối mắt */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Cinzel', serif;
+            color: var(--color-heading);
+            line-height: var(--lh-heading);
+            letter-spacing: 0.03em;
+            font-weight: 700;
+        }
+
+        h1 { font-size: var(--font-h1); }
+        h2 { font-size: var(--font-h2); }
+        h3 { font-size: var(--font-h3); }
+        h4 { font-size: var(--font-h4); }
+        p  { font-size: var(--font-p); }
+
+        /* THANH ĐIỀU HƯỚNG <nav> */
+        header {
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--color-border);
+            padding: 1.25rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        nav.nav-container {
+            max-width: var(--container-max-width);
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Cinzel', serif;
+            font-size: 1.45rem;
+            font-weight: 700;
+            color: var(--color-heading);
+            text-decoration: none;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--color-text);
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--color-heading);
+        }
+
+        /* BỐ CỤC CHÍNH <main> */
+        main.main-content {
+            max-width: var(--container-max-width);
+            margin: 0 auto;
+            padding: 3.5rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 3.5rem;
+        }
+
+        /* HERO BANNER GIỚI THIỆU */
+        .hero-section {
+            text-align: center;
+            max-width: 52rem;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .hero-tag {
+            font-size: var(--font-small);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--color-subheading);
+            font-weight: 600;
+        }
+
+        .hero-desc {
+            font-size: 1.15rem;
+            color: var(--color-muted);
+            font-weight: 300;
+        }
+
+        /* BỐ CỤC CSS GRID AUTO-FIT (Ưu tiên theo yêu cầu, không dùng float hay absolute) */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(18.5rem, 1fr));
+            gap: 2rem;
+        }
+
+        /* THẺ NỘI DUNG TỐI GIẢN (CARD) */
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-0.35rem);
+            box-shadow: 0 1rem 2rem rgba(27, 67, 50, 0.07);
+        }
+
+        .card-img-wrapper {
+            width: 100%;
+            height: 14rem;
+            overflow: hidden;
+        }
+
+        .card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .card:hover .card-img {
+            transform: scale(1.05);
+        }
+
+        .card-body {
+            padding: 1.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+            flex: 1;
+        }
+
+        .card-body h4 {
+            /* Đồng nhất màu xanh lá quý phái và cỡ chữ h4 */
+            color: var(--color-heading);
+        }
+
+        .card-body p {
+            color: var(--color-text);
+            font-size: var(--font-p);
+            font-weight: 300;
+        }
+
+        /* KHUNG THÔNG TIN BẢN QUYỀN VÀ THANG ĐO CSS VARIABLES */
+        .typography-status-box {
+            background-color: var(--bg-accent);
+            border: 1px dashed var(--color-border);
+            border-radius: 0.75rem;
+            padding: 1.75rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .typography-status-box code {
+            font-family: monospace;
+            background: #ffffff;
+            padding: 0.2rem 0.6rem;
+            border-radius: 0.25rem;
+            color: var(--color-heading);
+            font-size: 0.9rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2.5rem 1rem;
+            border-top: 1px solid var(--color-border);
+            color: var(--color-muted);
+            font-size: var(--font-small);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CẤU TRÚC <nav> -->
+    <header>
+        <nav class="nav-container">
+            <a href="#" class="logo">ECO LUXURY</a>
+            <ul class="nav-links">
+                <li><a href="#ve-chung-toi">Về Chúng Tôi</a></li>
+                <li><a href="#kien-truc-xanh">Kiến Trúc Xanh</a></li>
+                <li><a href="#loi-song-ben-vung">Lối Sống Bền Vững</a></li>
+                <li><a href="#lien-he">Liên Hệ</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- CẤU TRÚC <main> - BỐ CỤC CHÍNH -->
+    <main class="main-content">
+
+        <!-- Phần Hero Giới Thiệu -->
+        <section class="hero-section">
+            <span class="hero-tag">Design System &bull; Bài Tập 01</span>
+            <h1>Hòa Hợp Cùng Thiên Nhiên</h1>
+            <p class="hero-desc">
+                Thiết kế web tối giản nhưng sang trọng với sự đồng nhất màu sắc xanh lá và nền nâu be tương phản, áp dụng triệt để hệ thống thang đo kích thước chữ Responsive qua CSS Variables.
+            </p>
+        </section>
+
+        <!-- Bố Cục Chính Sử Dụng CSS Grid Auto-fit (Không dùng float hay position absolute) -->
+        <section class="grid-layout">
+
+            <!-- Thẻ 1: Rừng Nguyên Sinh -->
+            <article class="card">
+                <div class="card-img-wrapper">
+                    <img class="card-img" 
+                         src="https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=700&q=80" 
+                         alt="Rừng xanh bảo tồn thiên nhiên" 
+                         loading="lazy">
+                </div>
+                <div class="card-body">
+                    <h4>Bảo Tồn Rừng Cội Nguồn</h4>
+                    <p>
+                        Rừng xanh không chỉ là lá phổi của trái đất mà còn là biểu tượng của sự sống thuần khiết và trường tồn qua hàng thế kỷ.
+                    </p>
+                </div>
+            </article>
+
+            <!-- Thẻ 2: Năng Lượng Tái Tạo -->
+            <article class="card">
+                <div class="card-img-wrapper">
+                    <img class="card-img" 
+                         src="https://images.unsplash.com/photo-1466611653911-95081537e5b7?auto=format&fit=crop&w=700&q=80" 
+                         alt="Năng lượng gió và cánh đồng xanh" 
+                         loading="lazy">
+                </div>
+                <div class="card-body">
+                    <h4>Năng Lượng Gió Tái Tạo</h4>
+                    <p>
+                        Khai thác sức mạnh vô tận của gió tự nhiên để kiến tạo nguồn điện xanh, giảm thiểu triệt để lượng khí thải carbon cho hành tinh.
+                    </p>
+                </div>
+            </article>
+
+            <!-- Thẻ 3: Kiến Trúc Xanh Sang Trọng -->
+            <article class="card">
+                <div class="card-img-wrapper">
+                    <img class="card-img" 
+                         src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=700&q=80" 
+                         alt="Nội thất xanh tối giản và sang trọng" 
+                         loading="lazy">
+                </div>
+                <div class="card-body">
+                    <h4>Không Gian Sống Sinh Thái</h4>
+                    <p>
+                        Kết hợp tinh tế giữa vật liệu gỗ nâu be mộc mạc và cây xanh thanh khiết, tạo nên phong cách sống tối giản nhưng đầy trang nhã.
+                    </p>
+                </div>
+            </article>
+
+        </section>
+
+        <!-- Khung Kiểm Tra Responsive Typography Scale -->
+        <section class="typography-status-box">
+            <h4>Chuẩn Hóa Typography Scale</h4>
+            <p>
+                Mọi tiêu đề được đồng nhất màu xanh lá <code>var(--color-heading)</code>, kích cỡ dùng <code>rem</code> và tự động co giãn khi chiều rộng <code>&lt; 600px</code>.
+            </p>
+            <p style="font-size: var(--font-small); color: var(--color-muted);">
+                Sinh viên thực hiện: <strong>Phạm Hồng Hải Đăng</strong> &bull; Nhánh: <code>feature/phamhonghaidang-html</code>
+            </p>
+        </section>
+
+    </main>
+
+    <!-- CHÂN TRANG -->
+    <footer>
+        <p>&copy; 2026 Eco Luxury &bull; Bài Tập 01 - Thiết Kế Web Responsive</p>
+    </footer>
+
+</body>
+</html>
