@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <!-- =========================================================
+         THÔNG TIN CẤU HÌNH & BẢN QUYỀN W3C (METADATA)
+         Tác giả: Phạm Hồng Hải Đăng
+         Đề bài 5: Responsive Image Gallery (CSS Grid auto-fit, minmax(250px, 1fr))
+         Môn học: Thiết kế Web - Tuần 4
+         ========================================================= -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Phạm Hồng Hải Đăng">
+    <meta name="description" content="Bài tập 5: Bộ sưu tập ảnh tự co giãn cột với CSS Grid repeat(auto-fit, minmax(250px, 1fr))">
+    <title>Bài 5: Responsive Image Gallery - Phạm Hồng Hải Đăng</title>
+
+    <!-- Google Fonts cao cấp: Cinzel & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* =========================================================
+           1. HỆ THỐNG BIẾN THIẾT KẾ (DESIGN TOKENS)
+           ========================================================= */
+        :root {
+            --bg-page: #f5f2eb;             /* Nền be ấm trang nhã đồng bộ */
+            --bg-card: #ffffff;             /* Nền thẻ ảnh trắng tinh khôi */
+            --bg-badge: #e8efe9;            /* Nền nhãn danh mục xanh thảo mộc */
+            --color-primary: #1b4332;       /* Xanh lá rừng quý phái */
+            --color-primary-hover: #2d6a4f; /* Xanh lá khi hover */
+            --color-accent: #b78a48;        /* Vàng hổ phách điểm nhấn */
+            --color-text-main: #2d2926;     /* Màu than trầm sang trọng */
+            --color-text-muted: #6c6760;    /* Xám nâu ghi chú */
+            --color-border: #e2dcd0;        /* Viền be tự nhiên */
+
+            --shadow-card: 0 6px 20px rgba(45, 41, 38, 0.06);
+            --shadow-hover: 0 16px 36px rgba(45, 41, 38, 0.14);
+            --radius-md: 16px;
+            --radius-sm: 8px;
+            --transition-smooth: all 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        /* =========================================================
+           2. BASE RESET & CHUẨN MỰC TYPOGRAPHY
+           ========================================================= */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-page);
+            color: var(--color-text-main);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            padding-bottom: 4rem;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Cinzel', serif;
+            color: var(--color-primary);
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* =========================================================
+           3. HEADER & THANH NHẬN DIỆN TÁC GIẢ
+           ========================================================= */
+        .site-header {
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--color-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 1rem 1.5rem;
+        }
+
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .brand-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            font-family: 'Cinzel', serif;
+            color: var(--color-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .author-badge {
+            font-size: 0.85rem;
+            color: var(--color-primary);
+            background: var(--bg-badge);
+            padding: 0.35rem 0.85rem;
+            border-radius: 999px;
+            font-weight: 600;
+            border: 1px solid var(--color-border);
+        }
+
+        /* =========================================================
+           4. KHU VỰC GIỚI THIỆU & THANH BỘ LỌC TƯƠNG TÁC
+           ========================================================= */
+        .container {
+            max-width: 1200px;
+            margin: 2.5rem auto 0;
+            padding: 0 1.5rem;
+        }
+
+        .gallery-intro {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .gallery-badge {
+            display: inline-block;
+            background: var(--bg-badge);
+            color: var(--color-primary);
+            padding: 0.4rem 1.1rem;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .gallery-intro h1 {
+            font-size: 2.35rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .gallery-intro p {
+            color: var(--color-text-muted);
+            font-size: 1.05rem;
+            max-width: 700px;
+            margin: 0 auto 1.5rem;
+        }
+
+        /* Hộp hiển thị trực quan thông số Grid */
+        .grid-spec-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: #ffffff;
+            border: 1px solid var(--color-border);
+            padding: 0.55rem 1.25rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            color: var(--color-primary);
+            box-shadow: var(--shadow-card);
+        }
+
+        .grid-spec-pill code {
+            background: #eee8dc;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+
+        /* Thanh lọc danh mục ảnh chuẩn UX */
+        .filter-tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin: 2rem 0 2.5rem;
+        }
+
+        .filter-btn {
+            background: #ffffff;
+            border: 1px solid var(--color-border);
+            color: var(--color-text-main);
+            padding: 0.5rem 1.25rem;
+            border-radius: 999px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .filter-btn:hover {
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        .filter-btn.active {
+            background: var(--color-primary);
+            color: #ffffff;
+            border-color: var(--color-primary);
+            box-shadow: 0 4px 12px rgba(27, 67, 50, 0.25);
+        }
+
+        /* =========================================================
+           5. TRỌNG TÂM ĐỀ BÀI 5: LƯỚI TỰ ĐỘNG CO GIÃN CỘT BẰNG CSS GRID
+           Thuộc tính cốt lõi: repeat(auto-fit, minmax(250px, 1fr))
+           ========================================================= */
+        .grid-container {
+            display: grid;
+            /* QUY TẮC CỐT LÕI ĐỀ BÀI 5: Tự động tính toán số cột theo độ rộng màn hình */
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.75rem;
+        }
+
+        /* =========================================================
+           6. CẤU TRÚC CARD CHUẨN SEMANTIC HTML (FIGURE & FIGCAPTION)
+           Tích hợp ảnh (image-item) và nội dung chữ (content-item)
+           trong từng ô lưới để tối ưu trải nghiệm đọc lướt (Skimming UX)
+           ========================================================= */
+        .gallery-card {
+            background-color: var(--bg-card);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--color-border);
+            overflow: hidden;
+            box-shadow: var(--shadow-card);
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition-smooth);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .gallery-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-hover);
+            border-color: rgba(27, 67, 50, 0.25);
+        }
+
+        /* Khối chứa ảnh (Image Grid Item) */
+        .image-grid-item {
+            position: relative;
+            width: 100%;
+            /* Cố định tỷ lệ vàng 4:3 cho mọi ảnh, ngăn vỡ layout */
+            aspect-ratio: 4 / 3;
+            overflow: hidden;
+            background-color: #e5e0d8;
+        }
+
+        .responsive-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .gallery-card:hover .responsive-image {
+            transform: scale(1.08); /* Zoom nhẹ khi hover tạo chiều sâu */
+        }
+
+        /* Nhãn danh mục nổi trên ảnh */
+        .category-tag {
+            position: absolute;
+            top: 0.85rem;
+            left: 0.85rem;
+            background: rgba(27, 67, 50, 0.88);
+            color: #ffffff;
+            padding: 0.3rem 0.7rem;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            border-radius: 4px;
+            backdrop-filter: blur(4px);
+            z-index: 2;
+        }
+
+        /* Icon kính lúp phóng to khi rê chuột */
+        .zoom-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(27, 67, 50, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 3;
+        }
+
+        .zoom-icon {
+            width: 44px;
+            height: 44px;
+            background: #ffffff;
+            color: var(--color-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-card:hover .zoom-overlay {
+            opacity: 1;
+        }
+
+        .gallery-card:hover .zoom-icon {
+            transform: scale(1);
+        }
+
+        /* Khối chứa nội dung chữ (Content Grid Item) */
+        .content-grid-item {
+            padding: 1.35rem 1.4rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: space-between;
+        }
+
+        .content-grid-item h3 {
+            font-size: 1.15rem;
+            margin-bottom: 0.5rem;
+            transition: color 0.2s ease;
+        }
+
+        .gallery-card:hover .content-grid-item h3 {
+            color: var(--color-primary-hover);
+        }
+
+        .content-grid-item p {
+            font-size: 0.9rem;
+            color: var(--color-text-muted);
+            line-height: 1.55;
+            margin-bottom: 1rem;
+        }
+
+        /* Footer nhỏ bên trong thẻ */
+        .card-meta-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 0.85rem;
+            border-top: 1px solid var(--color-border);
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+        }
+
+        .card-author {
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+
+        /* =========================================================
+           7. CỬA SỔ XEM ẢNH TO TOÀN MÀN HÌNH (LIGHTBOX MODAL)
+           ========================================================= */
+        .lightbox-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 20, 18, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            z-index: 9999;
+            padding: 1.5rem;
+        }
+
+        .lightbox-modal.is-active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .lightbox-wrapper {
+            position: relative;
+            max-width: 900px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+            animation: zoomIn 0.3s ease;
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.92); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .lightbox-image-box {
+            width: 100%;
+            max-height: 65vh;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lightbox-image-box img {
+            width: 100%;
+            height: 100%;
+            max-height: 65vh;
+            object-fit: contain;
+        }
+
+        .lightbox-caption {
+            padding: 1.5rem;
+            background: #ffffff;
+        }
+
+        .lightbox-caption h2 {
+            font-size: 1.35rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .lightbox-close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            border: none;
+            font-size: 1.25rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s ease;
+            z-index: 10;
+        }
+
+        .lightbox-close-btn:hover {
+            background: #1b4332;
+        }
+
+        /* =========================================================
+           8. FOOTER TRANG WEB
+           ========================================================= */
+        .site-footer {
+            margin-top: 4.5rem;
+            text-align: center;
+            font-size: 0.88rem;
+            color: var(--color-text-muted);
+            border-top: 1px solid var(--color-border);
+            padding-top: 2rem;
+        }
+
+        .site-footer strong {
+            color: var(--color-primary);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- THANH HEADER & NHẬN DIỆN TÁC GIẢ -->
+    <header class="site-header">
+        <div class="header-inner">
+            <div class="brand-title">
+                🌿 TRIỂN LÃM THIẾT KẾ XANH
+            </div>
+            <div class="author-badge">
+                Tác giả: Phạm Hồng Hải Đăng (Tuần 4)
+            </div>
+        </div>
+    </header>
+
+    <!-- NỘI DUNG CHÍNH (MAIN CONTAINER) -->
+    <main class="container">
+
+        <!-- Giới thiệu & Trực quan hóa cơ chế CSS Grid -->
+        <section class="gallery-intro">
+            <span class="gallery-badge">Tuần 4 • Bài tập 5: Responsive Image Gallery</span>
+            <h1>BỘ SƯU TẬP ẢNH TỰ CO GIÃN CỘT</h1>
+            <p>
+                Sử dụng sức mạnh của CSS Grid hiện đại. Các cột ảnh tự động sắp xếp thông minh theo chiều rộng màn hình từ 4 cột, 3 cột, 2 cột cho đến 1 cột mà không cần bất kỳ truy vấn <code>@media</code> nào!
+            </p>
+            
+            <div class="grid-spec-pill">
+                📐 <strong>Cấu hình CSS Grid:</strong>
+                <code>grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));</code>
+            </div>
+
+            <!-- Thanh lọc danh mục ảnh phục vụ duyệt nhanh (Skimming UX) -->
+            <div class="filter-tabs">
+                <button type="button" class="filter-btn active" onclick="filterGallery('all', this)">Tất Cả (6)</button>
+                <button type="button" class="filter-btn" onclick="filterGallery('architecture', this)">Kiến Trúc</button>
+                <button type="button" class="filter-btn" onclick="filterGallery('nature', this)">Thiên Nhiên</button>
+                <button type="button" class="filter-btn" onclick="filterGallery('interior', this)">Nội Thất</button>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             LƯỚI ẢNH TỰ CO GIÃN (GRID CONTAINER)
+             Đáp ứng chuẩn W3C: Mỗi ô thẻ chứa ảnh (image-grid-item) 
+             và nội dung (content-grid-item)
+             ========================================================= -->
+        <div class="grid-container" id="galleryGrid">
+
+            <!-- TÁC PHẨM 1: KIẾN TRÚC -->
+            <article class="gallery-card" data-category="architecture" onclick="openLightbox(this)">
+                <div class="image-grid-item">
+                    <span class="category-tag">Kiến Trúc</span>
+                    <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80" 
+                         alt="Không gian phòng khách đón ánh sáng tự nhiên" 
+                         class="responsive-image"
+                         loading="lazy">
+                    <div class="zoom-overlay">
+                        <span class="zoom-icon">🔍</span>
+                    </div>
+                </div>
+                <div class="content-grid-item">
+                    <div>
+                        <h3>Biệt Thự Vườn Tối Giản</h3>
+                        <p>Thiết kế không gian mở với tường kính lớn giúp tận dụng trọn vẹn ánh sáng mặt trời.</p>
+                    </div>
+                    <div class="card-meta-bar">
+                        <span class="card-author">Phạm Hồng Hải Đăng</span>
+                        <span>Đà Lạt • 2026</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- TÁC PHẨM 2: THIÊN NHIÊN -->
+            <article class="gallery-card" data-category="nature" onclick="openLightbox(this)">
+                <div class="image-grid-item">
+                    <span class="category-tag">Thiên Nhiên</span>
+                    <img src="https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=800&q=80" 
+                         alt="Rừng thông cổ thụ trong sương sớm" 
+                         class="responsive-image"
+                         loading="lazy">
+                    <div class="zoom-overlay">
+                        <span class="zoom-icon">🔍</span>
+                    </div>
+                </div>
+                <div class="content-grid-item">
+                    <div>
+                        <h3>Rừng Nguyên Sinh Phía Bắc</h3>
+                        <p>Hệ sinh thái xanh tươi tốt cung cấp bầu không khí trong lành và cảm hứng sáng tạo.</p>
+                    </div>
+                    <div class="card-meta-bar">
+                        <span class="card-author">Phạm Hồng Hải Đăng</span>
+                        <span>Tây Bắc • 2026</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- TÁC PHẨM 3: NỘI THẤT -->
+            <article class="gallery-card" data-category="interior" onclick="openLightbox(this)">
+                <div class="image-grid-item">
+                    <span class="category-tag">Nội Thất</span>
+                    <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80" 
+                         alt="Góc làm việc phong cách Scandinavian" 
+                         class="responsive-image"
+                         loading="lazy">
+                    <div class="zoom-overlay">
+                        <span class="zoom-icon">🔍</span>
+                    </div>
+                </div>
+                <div class="content-grid-item">
+                    <div>
+                        <h3>Góc Đọc Sách Thảo Mộc</h3>
+                        <p>Sự kết hợp hài hòa giữa bàn gỗ mộc sồi và những chậu cây phong lữ dịu êm.</p>
+                    </div>
+                    <div class="card-meta-bar">
+                        <span class="card-author">Phạm Hồng Hải Đăng</span>
+                        <span>Studio • 2026</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- TÁC PHẨM 4: KIẾN TRÚC -->
+            <article class="gallery-card" data-category="architecture" onclick="openLightbox(this)">
+                <div class="image-grid-item">
+                    <span class="category-tag">Kiến Trúc</span>
+                    <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80" 
+                         alt="Nhà nghỉ dưỡng ven hồ phong cách hiện đại" 
+                         class="responsive-image"
+                         loading="lazy">
+                    <div class="zoom-overlay">
+                        <span class="zoom-icon">🔍</span>
+                    </div>
+                </div>
+                <div class="content-grid-item">
+                    <div>
+                        <h3>Nhà Ven Hồ Mặt Nước</h3>
+                        <p>Kiến trúc phản chiếu mặt nước êm đềm với vật liệu đá bazan tự nhiên bản địa.</p>
+                    </div>
+                    <div class="card-meta-bar">
+                        <span class="card-author">Phạm Hồng Hải Đăng</span>
+                        <span>Hồ Tuyền Lâm • 2026</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- TÁC PHẨM 5: NỘI THẤT -->
+            <article class="gallery-card" data-category="interior" onclick="openLightbox(this)">
+                <div class="image-grid-item">
+                    <span class="category-tag">Nội Thất</span>
+                    <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&q=80" 
+                         alt="Ghế bành mây tre đan cao cấp" 
+                         class="responsive-image"
+                         loading="lazy">
+                    <div class="zoom-overlay">
+                        <span class="zoom-icon">🔍</span>
+                    </div>
+                </div>
+                <div class="content-grid-item">
+                    <div>
+                        <h3>Vật Liệu Mây Tre Đan Mộc</h3>
+                        <p>Tinh hoa thủ công truyền thống kết hợp đường nét tối giản của nội thất thế kỷ 21.</p>
+                    </div>
+                    <div class="card-meta-bar">
+                        <span class="card-author">Phạm Hồng Hải Đăng</span>
+                        <span>Hà Nội • 2026</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- TÁC PHẨM 6: THIÊN NHIÊN -->
+            <article class="gallery-card" data-category="nature" onclick="openLightbox(this)">
+                <div class="image-grid-item">
+                    <span class="category-tag">Thiên Nhiên</span>
+                    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80" 
+                         alt="Bãi biển cát trắng nước trong xanh" 
+                         class="responsive-image"
+                         loading="lazy">
+                    <div class="zoom-overlay">
+                        <span class="zoom-icon">🔍</span>
+                    </div>
+                </div>
+                <div class="content-grid-item">
+                    <div>
+                        <h3>Đường Bờ Biển Ngọc Bích</h3>
+                        <p>Vẻ đẹp hoang sơ chưa bị đô thị hóa của những vịnh biển ngập tràn nắng ấm miền nhiệt đới.</p>
+                    </div>
+                    <div class="card-meta-bar">
+                        <span class="card-author">Phạm Hồng Hải Đăng</span>
+                        <span>Phú Quốc • 2026</span>
+                    </div>
+                </div>
+            </article>
+
+        </div>
+
+        <!-- FOOTER TRANG -->
+        <footer class="site-footer">
+            <p>Tác giả: <strong>Phạm Hồng Hải Đăng</strong> • Bài tập 5: Responsive Image Gallery</p>
+            <p style="margin-top: 0.4rem;">Thiết kế Web Chuẩn mực Tuần 4 - Sử dụng CSS Grid Auto-fit & Semantic HTML5</p>
+        </footer>
+
+    </main>
+
+    <!-- CỬA SỔ PHÓNG TO ẢNH (LIGHTBOX MODAL) -->
+    <div class="lightbox-modal" id="lightboxModal" onclick="closeLightbox(event)">
+        <div class="lightbox-wrapper" onclick="event.stopPropagation()">
+            <button type="button" class="lightbox-close-btn" onclick="closeLightbox()" aria-label="Đóng cửa sổ">✕</button>
+            <div class="lightbox-image-box">
+                <img src="" alt="" id="lightboxImg">
+            </div>
+            <div class="lightbox-caption">
+                <h2 id="lightboxTitle">Tiêu đề ảnh</h2>
+                <p id="lightboxDesc" style="color: var(--color-text-muted); font-size: 0.95rem;">Mô tả ảnh</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================================
+         JAVASCRIPT: TƯƠNG TÁC LỌC DANH MỤC & LIGHTBOX PHÓNG TO
+         ========================================================= -->
+    <script>
+        // 1. Lọc danh mục ảnh (Filter)
+        function filterGallery(category, buttonElement) {
+            const cards = document.querySelectorAll('.gallery-card');
+            const buttons = document.querySelectorAll('.filter-btn');
+
+            // Đổi trạng thái active trên nút bấm
+            buttons.forEach(btn => btn.classList.remove('active'));
+            buttonElement.classList.add('active');
+
+            // Ẩn / hiện card theo danh mục
+            cards.forEach(card => {
+                if (category === 'all' || card.getAttribute('data-category') === category) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // 2. Mở Lightbox xem ảnh to
+        function openLightbox(cardElement) {
+            const imgSrc = cardElement.querySelector('.responsive-image').getAttribute('src');
+            const imgAlt = cardElement.querySelector('.responsive-image').getAttribute('alt');
+            const title = cardElement.querySelector('h3').textContent;
+            const desc = cardElement.querySelector('p').textContent;
+
+            const modal = document.getElementById('lightboxModal');
+            const lightboxImg = document.getElementById('lightboxImg');
+            const lightboxTitle = document.getElementById('lightboxTitle');
+            const lightboxDesc = document.getElementById('lightboxDesc');
+
+            lightboxImg.setAttribute('src', imgSrc);
+            lightboxImg.setAttribute('alt', imgAlt);
+            lightboxTitle.textContent = title;
+            lightboxDesc.textContent = desc;
+
+            modal.classList.add('is-active');
+            document.body.style.overflow = 'hidden'; // Khóa cuộn trang khi mở modal
+        }
+
+        // 3. Đóng Lightbox
+        function closeLightbox(event) {
+            const modal = document.getElementById('lightboxModal');
+            modal.classList.remove('is-active');
+            document.body.style.overflow = '';
+        }
+
+        // Đóng khi bấm phím ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeLightbox();
+            }
+        });
+    </script>
+</body>
+</html>

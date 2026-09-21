@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <!-- =========================================================
+         THÔNG TIN CẤU HÌNH & BẢN QUYỀN (METADATA)
+         Tác giả: Phạm Hồng Hải Đăng
+         Đề bài 3: Smart Navigation Bar (Desktop đầy đủ, Mobile Hamburger ẩn/hiện display: none)
+         Môn học: Thiết kế Web - Tuần 4
+         ========================================================= -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Phạm Hồng Hải Đăng">
+    <meta name="description" content="Bài tập 3: Smart Navigation Bar kết hợp Off-canvas Drawer chuẩn UI/UX">
+    <title>Bài 3: Smart Navigation Bar - Phạm Hồng Hải Đăng</title>
+
+    <!-- Google Fonts cao cấp: Cinzel (Tiêu đề trang nhã) & Plus Jakarta Sans (Giao diện hiện đại) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* =========================================================
+           1. HỆ THỐNG BIẾN THIẾT KẾ (DESIGN TOKENS)
+           ========================================================= */
+        :root {
+            --bg-page: #f5f2eb;             /* Nền be ấm trang nhã đồng bộ */
+            --bg-nav: rgba(255, 255, 255, 0.92); /* Nền kính mờ cho Navbar */
+            --bg-drawer: #ffffff;           /* Nền thanh trượt ngầm */
+            --color-primary: #1b4332;       /* Xanh lá rừng quý phái đồng nhất */
+            --color-primary-hover: #2d6a4f; /* Xanh thảo mộc khi hover */
+            --color-accent: #b78a48;        /* Vàng hổ phách điểm nhấn */
+            --color-text: #2d2926;          /* Màu than trầm chuẩn mực */
+            --color-text-muted: #6c6760;    /* Màu ghi chú */
+            --color-border: #e4dfd5;        /* Viền be nhẹ */
+            
+            --nav-height: 76px;
+            --shadow-nav: 0 4px 20px rgba(45, 41, 38, 0.06);
+            --shadow-drawer: -10px 0 35px rgba(0, 0, 0, 0.12);
+            --transition-smooth: all 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        /* =========================================================
+           2. BASE RESET & PHÔNG CHỮ
+           ========================================================= */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-page);
+            color: var(--color-text);
+            line-height: 1.65;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        /* Khóa cuộn trang khi mở thanh trượt trên điện thoại */
+        body.no-scroll {
+            overflow: hidden;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Cinzel', serif;
+            color: var(--color-primary);
+            font-weight: 700;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* =========================================================
+           3. THANH ĐIỀU HƯỚNG CHÍNH (SMART NAVIGATION BAR)
+           ========================================================= */
+        .smart-header {
+            position: sticky;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: var(--nav-height);
+            background: var(--bg-nav);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--color-border);
+            box-shadow: var(--shadow-nav);
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1180px;
+            height: 100%;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Logo thương hiệu */
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-family: 'Cinzel', serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+
+        .nav-brand-icon {
+            color: var(--color-accent);
+            font-size: 1.5rem;
+        }
+
+        /* Danh sách Menu trên Desktop */
+        .desktop-nav {
+            display: flex;
+            align-items: center;
+            gap: 2.25rem;
+            list-style: none;
+        }
+
+        .nav-link {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--color-text);
+            position: relative;
+            padding: 0.5rem 0;
+            transition: color 0.25s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--color-primary);
+            font-weight: 600;
+        }
+
+        /* Đường gạch chân động tinh tế khi hover menu */
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0%;
+            height: 2px;
+            background-color: var(--color-accent);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+
+        /* Nút kêu gọi hành động (CTA) trên Desktop */
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn-cta {
+            background-color: var(--color-primary);
+            color: #ffffff;
+            padding: 0.55rem 1.35rem;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            transition: var(--transition-smooth);
+            border: 1px solid transparent;
+        }
+
+        .btn-cta:hover {
+            background-color: var(--color-primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 14px rgba(27, 67, 50, 0.25);
+        }
+
+        /* =========================================================
+           4. YÊU CẦU ĐỀ BÀI 3: NÚT HAMBURGER DÙNG `display: none`
+           Mặc định Desktop: Hamburger Icon BỊ ẨN (display: none)
+           ========================================================= */
+        .hamburger-btn {
+            display: none; /* MẶC ĐỊNH ẨN TRÊN DESKTOP THEO ĐÚNG YÊU CẦU ĐỀ BÀI */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            width: 44px;
+            height: 44px;
+            background: transparent;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            cursor: pointer;
+            padding: 0;
+            transition: var(--transition-smooth);
+            z-index: 1100;
+        }
+
+        .hamburger-btn:hover {
+            background-color: rgba(27, 67, 50, 0.06);
+            border-color: var(--color-primary);
+        }
+
+        /* 3 thanh gạch ngang tạo nên icon Hamburger */
+        .hamburger-line {
+            width: 22px;
+            height: 2px;
+            background-color: var(--color-primary);
+            border-radius: 2px;
+            transition: var(--transition-smooth);
+            transform-origin: center;
+        }
+
+        /* Hiệu ứng biến hình Hamburger thành dấu [X] khi mở menu */
+        .hamburger-btn.is-active .hamburger-line:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+
+        .hamburger-btn.is-active .hamburger-line:nth-child(2) {
+            opacity: 0;
+            transform: scaleX(0);
+        }
+
+        .hamburger-btn.is-active .hamburger-line:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+
+        /* =========================================================
+           5. LỚP MÀN PHỦ (OVERLAY BACKDROP) KHI MỞ MENU MOBILE
+           ========================================================= */
+        .menu-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(45, 41, 38, 0.45);
+            backdrop-filter: blur(4px);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.35s ease, visibility 0.35s ease;
+            z-index: 1050;
+        }
+
+        .menu-backdrop.is-visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* =========================================================
+           6. THANH TRƯỢT NGẦM (OFF-CANVAS DRAWER) CHO MOBILE
+           Không cần mở tab mới nặng nề, tự động trượt ra mượt mà
+           ========================================================= */
+        .mobile-drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 82%;
+            max-width: 340px; /* Tự động giới hạn kích thước, không hardcode cố định */
+            height: 100vh;
+            background-color: var(--bg-drawer);
+            box-shadow: var(--shadow-drawer);
+            padding: 5.5rem 2rem 2.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            z-index: 1060;
+            transform: translateX(100%); /* Ẩn ngầm bên mép phải */
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .mobile-drawer.is-open {
+            transform: translateX(0); /* Trượt nhẹ nhàng ra khi bấm Hamburger */
+        }
+
+        .drawer-nav-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .drawer-link {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--color-text);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid var(--color-border);
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+
+        .drawer-link:hover, .drawer-link.active {
+            color: var(--color-primary);
+            transform: translateX(6px);
+        }
+
+        .drawer-link-arrow {
+            font-size: 0.9rem;
+            color: var(--color-accent);
+        }
+
+        .drawer-footer {
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .drawer-author-card {
+            background-color: var(--bg-page);
+            padding: 0.85rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--color-border);
+            font-size: 0.85rem;
+        }
+
+        .drawer-author-card strong {
+            color: var(--color-primary);
+        }
+
+        /* =========================================================
+           7. MEDIA QUERIES: ĐÁP ỨNG THIẾT BỊ DI ĐỘNG (MOBILE)
+           YÊU CẦU ĐỀ BÀI 3:
+           - Trên Mobile: Ẩn menu đầy đủ (display: none)
+           - Trên Mobile: Hiện icon Hamburger (display: flex)
+           ========================================================= */
+        @media (max-width: 768px) {
+            /* 1. ẨN MENU ĐẦY ĐỦ TRÊN MOBILE */
+            .desktop-nav {
+                display: none !important;
+            }
+
+            .nav-actions .btn-cta {
+                display: none; /* Ẩn nút cta lớn trên thanh chính, đưa vào drawer */
+            }
+
+            /* 2. HIỂN THỊ NÚT HAMBURGER TRÊN MOBILE */
+            .hamburger-btn {
+                display: flex; /* BẬT HIỂN THỊ ICON HAMBURGER TRÊN MOBILE */
+            }
+        }
+
+        /* =========================================================
+           8. KHU VỰC NỘI DUNG DEMO MINH HỌA TRÊN TRANG
+           ========================================================= */
+        .container {
+            max-width: 1080px;
+            margin: 3rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .hero-banner {
+            background: #ffffff;
+            border-radius: 20px;
+            border: 1px solid var(--color-border);
+            padding: 3.5rem 2.5rem;
+            box-shadow: 0 8px 30px rgba(45, 41, 38, 0.05);
+            text-align: center;
+            margin-bottom: 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(27, 67, 50, 0.08);
+            color: var(--color-primary);
+            padding: 0.4rem 1rem;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            border: 1px solid rgba(27, 67, 50, 0.15);
+        }
+
+        .hero-banner h1 {
+            font-size: 2.35rem;
+            margin-bottom: 1rem;
+            line-height: 1.25;
+        }
+
+        .hero-banner p {
+            font-size: 1.05rem;
+            color: var(--color-text-muted);
+            max-width: 680px;
+            margin: 0 auto 2rem;
+        }
+
+        /* Bảng so sánh trực quan cơ chế */
+        .spec-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+            text-align: left;
+        }
+
+        .spec-box {
+            background: var(--bg-page);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .spec-box h3 {
+            font-size: 1.15rem;
+            margin-bottom: 0.6rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .spec-code {
+            display: inline-block;
+            background: #e7e2d6;
+            color: var(--color-primary);
+            font-family: monospace;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Footer trang */
+        .site-footer {
+            text-align: center;
+            font-size: 0.88rem;
+            color: var(--color-text-muted);
+            border-top: 1px solid var(--color-border);
+            padding: 2.5rem 1.5rem;
+            margin-top: 4rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- THANH ĐIỀU HƯỚNG THÔNG MINH (SMART NAVIGATION BAR) -->
+    <header class="smart-header">
+        <div class="nav-container">
+            
+            <!-- 1. Brand / Logo -->
+            <a href="#home" class="nav-brand">
+                <span class="nav-brand-icon">❖</span> HẢI ĐĂNG DESIGN
+            </a>
+
+            <!-- 2. Menu đầy đủ trên Desktop (Tự ẩn bằng display: none trên Mobile) -->
+            <nav>
+                <ul class="desktop-nav" id="desktopNav">
+                    <li><a href="#home" class="nav-link active">Trang Chủ</a></li>
+                    <li><a href="#features" class="nav-link">Giải Pháp</a></li>
+                    <li><a href="#projects" class="nav-link">Dự Án Kiến Trúc</a></li>
+                    <li><a href="#about" class="nav-link">Về Tác Giả</a></li>
+                    <li><a href="#contact" class="nav-link">Liên Hệ</a></li>
+                </ul>
+            </nav>
+
+            <!-- 3. Nút Hành động & Nút Hamburger -->
+            <div class="nav-actions">
+                <a href="#consultation" class="btn-cta">Nhận Tư Vấn</a>
+
+                <!-- Nút Hamburger Mobile (display: none trên Desktop, display: flex trên Mobile) -->
+                <button type="button" 
+                        class="hamburger-btn" 
+                        id="hamburgerBtn" 
+                        aria-label="Mở bảng chọn điều hướng" 
+                        aria-expanded="false" 
+                        onclick="toggleMobileMenu()">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </button>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- MÀN PHỦ LÀM MỜ NỀN KHI MỞ MENU MOBILE (BACKDROP OVERLAY) -->
+    <div class="menu-backdrop" id="menuBackdrop" onclick="closeMobileMenu()"></div>
+
+    <!-- THANH TRƯỢT NGẦM HIỆN ĐẠI DÀNH CHO MOBILE (OFF-CANVAS DRAWER) -->
+    <aside class="mobile-drawer" id="mobileDrawer" aria-hidden="true">
+        <div>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem;">
+                <span style="font-family: 'Cinzel', serif; font-weight: 700; color: var(--color-primary); font-size: 1.1rem;">
+                    DANH MỤC MENU
+                </span>
+            </div>
+
+            <!-- Các mục liên kết trong thanh trượt ngầm -->
+            <ul class="drawer-nav-list">
+                <li>
+                    <a href="#home" class="drawer-link active" onclick="closeMobileMenu()">
+                        <span>Trang Chủ</span>
+                        <span class="drawer-link-arrow">→</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#features" class="drawer-link" onclick="closeMobileMenu()">
+                        <span>Giải Pháp Thiết Kế</span>
+                        <span class="drawer-link-arrow">→</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#projects" class="drawer-link" onclick="closeMobileMenu()">
+                        <span>Dự Án Tiêu Biểu</span>
+                        <span class="drawer-link-arrow">→</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#about" class="drawer-link" onclick="closeMobileMenu()">
+                        <span>Về Tác Giả</span>
+                        <span class="drawer-link-arrow">→</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#contact" class="drawer-link" onclick="closeMobileMenu()">
+                        <span>Liên Hệ Trực Tiếp</span>
+                        <span class="drawer-link-arrow">→</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Chân thanh trượt: Thông tin tác giả & Nút hành động -->
+        <div class="drawer-footer">
+            <div class="drawer-author-card">
+                <div>Sinh viên thực hiện:</div>
+                <strong>Phạm Hồng Hải Đăng</strong>
+                <div style="color: var(--color-text-muted); font-size: 0.8rem; margin-top: 2px;">
+                    Tuần 4 - Bài tập 3: Smart Navbar
+                </div>
+            </div>
+            <a href="#consultation" class="btn-cta" style="text-align: center;" onclick="closeMobileMenu()">
+                Liên Hệ Tư Vấn Ngay
+            </a>
+        </div>
+    </aside>
+
+    <!-- KHU VỰC THỬ NGHIỆM & HƯỚNG DẪN TRỰC QUAN -->
+    <main class="container">
+        
+        <section class="hero-banner">
+            <span class="hero-badge">Tuần 4 • Thiết Kế Web Chuẩn Mực W3C</span>
+            <h1>BÀI 3: SMART NAVIGATION BAR</h1>
+            <p>
+                Hệ thống thanh điều hướng thông minh phản hồi theo kích thước màn hình: Menu hiển thị đầy đủ trên Desktop và tự động chuyển đổi sang Hamburger Icon & Thanh trượt ngầm (Off-canvas Drawer) trên Mobile.
+            </p>
+
+            <div class="spec-grid">
+                <div class="spec-box">
+                    <h3>💻 Trên Desktop (Màn hình rộng)</h3>
+                    <p>Hiển thị danh sách các thẻ liên kết ngang đầy đủ, trực quan và dễ tiếp cận.</p>
+                    <div class="spec-code">.hamburger-btn { display: none; }</div>
+                </div>
+
+                <div class="spec-box">
+                    <h3>📱 Trên Mobile (&lt; 768px)</h3>
+                    <p>Ẩn menu ngang, kích hoạt nút Hamburger 3 gạch mở thanh trượt ngầm mượt mà.</p>
+                    <div class="spec-code">.desktop-nav { display: none; }</div>
+                    <div class="spec-code">.hamburger-btn { display: flex; }</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Trình diễn ảnh giao diện chuẩn mực -->
+        <section style="background: #fff; padding: 2rem; border-radius: 16px; border: 1px solid var(--color-border);">
+            <h2 style="font-size: 1.5rem; margin-bottom: 1rem;">Tại sao không nên dùng cửa sổ pop-up hay if..else kiểm tra màn hình trong JS?</h2>
+            <ul style="padding-left: 1.5rem; display: flex; flex-direction: column; gap: 0.85rem; color: var(--color-text-muted);">
+                <li>
+                    <strong style="color: var(--color-text);">Chuẩn UI/UX cao cấp:</strong> Người dùng di động rất ghét việc bấm menu bị mở sang trang trắng mới hoặc nhảy pop-up che khuất. Một thanh trượt ngầm (Off-canvas Drawer) lướt êm ái từ mép màn hình mang lại cảm giác ứng dụng di động mượt mà (Native App Experience).
+                </li>
+                <li>
+                    <strong style="color: var(--color-text);">Tốc độ render vượt trội với CSS Media Queries:</strong> Thay vì dùng <code>if..else</code> trong JavaScript để liên tục lắng nghe sự kiện đổi kích thước cửa sổ (gây giật lag trình duyệt), CSS xử lý ở cấp độ nhân trình duyệt (Hardware Accelerated), tự động ẩn hiện tức thì khi người dùng xoay ngang/dọc điện thoại.
+                </li>
+                <li>
+                    <strong style="color: var(--color-text);">JavaScript chỉ giữ vai trò chuyển đổi trạng thái:</strong> JS chỉ làm một nhiệm vụ nhẹ nhàng nhất: kích hoạt class <code>.is-active</code> và <code>.is-open</code> khi người dùng nhấp vào nút Hamburger.
+                </li>
+            </ul>
+        </section>
+
+    </main>
+
+    <!-- FOOTER TRANG WEB -->
+    <footer class="site-footer">
+        <p>Thực hiện bởi: <strong>Phạm Hồng Hải Đăng</strong> • Mã bài tập: Exercise-03</p>
+        <p style="margin-top: 0.5rem; color: var(--color-text-muted);">Áp dụng Flexbox, CSS Display None, CSS Transitions và Semantic HTML5</p>
+    </footer>
+
+    <!-- =========================================================
+         9. JAVASCRIPT ĐIỀU KHIỂN TRẠNG THÁI MỞ/ĐÓNG MƯỢT MÀ
+         Sử dụng logic tinh gọn chuẩn UI/UX, không cần thư viện cồng kềnh
+         ========================================================= -->
+    <script>
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const mobileDrawer = document.getElementById('mobileDrawer');
+        const menuBackdrop = document.getElementById('menuBackdrop');
+
+        // Hàm bật/tắt menu trượt Mobile
+        function toggleMobileMenu() {
+            const isOpen = mobileDrawer.classList.toggle('is-open');
+            hamburgerBtn.classList.toggle('is-active', isOpen);
+            menuBackdrop.classList.toggle('is-visible', isOpen);
+            document.body.classList.toggle('no-scroll', isOpen);
+
+            // Cập nhật trạng thái hỗ trợ thiết bị trợ thính/trợ thị (a11y)
+            hamburgerBtn.setAttribute('aria-expanded', isOpen);
+            mobileDrawer.setAttribute('aria-hidden', !isOpen);
+        }
+
+        // Hàm đóng menu
+        function closeMobileMenu() {
+            mobileDrawer.classList.remove('is-open');
+            hamburgerBtn.classList.remove('is-active');
+            menuBackdrop.classList.remove('is-visible');
+            document.body.classList.remove('no-scroll');
+
+            hamburgerBtn.setAttribute('aria-expanded', 'false');
+            mobileDrawer.setAttribute('aria-hidden', 'true');
+        }
+
+        // Đóng menu khi bấm phím ESC (Trải nghiệm người dùng cao cấp)
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && mobileDrawer.classList.contains('is-open')) {
+                closeMobileMenu();
+            }
+        });
+
+        // Tự động đóng menu nếu người dùng xoay màn hình hoặc phóng to về lại Desktop
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768 && mobileDrawer.classList.contains('is-open')) {
+                closeMobileMenu();
+            }
+        });
+    </script>
+</body>
+</html>

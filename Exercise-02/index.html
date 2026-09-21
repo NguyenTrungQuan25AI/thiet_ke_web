@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <!-- =========================================================
+         THÔNG TIN CẤU HÌNH & BẢN QUYỀN (METADATA)
+         Tác giả: Phạm Hồng Hải Đăng
+         Đề bài 2: Adaptive Card Layout (Flexbox + Media Queries)
+         Môn: Thiết kế Web - Tuần 4
+         ========================================================= -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Phạm Hồng Hải Đăng">
+    <meta name="description" content="Bài tập 2: Adaptive Card Layout sử dụng Flexbox và Media Queries">
+    <title>Bài 2: Adaptive Card Layout - Phạm Hồng Hải Đăng</title>
+
+    <!-- Google Fonts cao cấp: Cinzel (Tiêu đề trang nhã) & Plus Jakarta Sans (Nội dung hiện đại) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* =========================================================
+           1. HỆ THỐNG BIẾN THIẾT KẾ (DESIGN TOKENS - CSS VARIABLES)
+           ========================================================= */
+        :root {
+            /* Bảng màu tối giản sang trọng (Minimalist Warm Earthy Palette) */
+            --bg-page: #f5f2eb;             /* Nền trang be ấm trang nhã */
+            --bg-card: #ffffff;             /* Nền thẻ card trắng sáng thanh lịch */
+            --bg-tag: #e8efe9;              /* Nền nhãn danh mục xanh nhạt dịu mát */
+            --color-primary: #1b4332;       /* Xanh lá rừng sâu đậm nhất quán cho thương hiệu và tiêu đề */
+            --color-primary-hover: #2d6a4f; /* Màu xanh khi hover */
+            --color-text-main: #2d2926;     /* Màu than trầm đọc lâu không mỏi mắt */
+            --color-text-muted: #6c6760;    /* Xám be ghi chú, ngày tháng */
+            --color-border: #e4dfd5;        /* Viền be nhẹ nhàng */
+            --color-accent: #b78a48;        /* Vàng hổ phách điểm xuyết sang trọng */
+
+            /* Đổ bóng tinh tế (Soft Elevation Shadows) */
+            --shadow-sm: 0 4px 12px rgba(45, 41, 38, 0.05);
+            --shadow-md: 0 12px 28px rgba(45, 41, 38, 0.08);
+            --shadow-lg: 0 20px 40px rgba(45, 41, 38, 0.12);
+
+            /* Bo góc chuẩn mực */
+            --radius-sm: 8px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+
+            /* Chuyển động mượt mà */
+            --transition-smooth: all 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        /* =========================================================
+           2. RESET & BỐ CỤC NỀN TẢNG (BASE STYLES)
+           ========================================================= */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-page);
+            color: var(--color-text-main);
+            line-height: 1.65;
+            -webkit-font-smoothing: antialiased;
+            padding-bottom: 4rem;
+        }
+
+        /* Đồng nhất phông chữ tiêu đề theo phong cách chuẩn hóa */
+        h1, h2, h3, h4 {
+            font-family: 'Cinzel', serif;
+            color: var(--color-primary);
+            font-weight: 700;
+            line-height: 1.25;
+            letter-spacing: 0.02em;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* =========================================================
+           3. THANH ĐIỀU HƯỚNG & HEADER THÔNG TIN TÁC GIẢ
+           ========================================================= */
+        .site-header {
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--color-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 1rem 1.5rem;
+        }
+
+        .header-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .brand-title {
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .brand-title span {
+            color: var(--color-accent);
+        }
+
+        .author-badge {
+            font-size: 0.85rem;
+            color: var(--color-primary);
+            background: var(--bg-tag);
+            padding: 0.35rem 0.85rem;
+            border-radius: 999px;
+            font-weight: 600;
+            border: 1px solid rgba(27, 67, 50, 0.15);
+        }
+
+        /* Container trung tâm trang */
+        .container {
+            max-width: 1050px;
+            margin: 2.5rem auto 0;
+            padding: 0 1.25rem;
+        }
+
+        /* Hero giới thiệu bài làm */
+        .intro-section {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .intro-section h1 {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .intro-section p {
+            color: var(--color-text-muted);
+            font-size: 1.05rem;
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        .requirement-callout {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            background: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-sm);
+            border-left: 4px solid var(--color-accent);
+            font-size: 0.9rem;
+            color: var(--color-primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* =========================================================
+           4. TRỌNG TÂM ĐỀ BÀI 2: ADAPTIVE CARD BẰNG FLEXBOX
+           ========================================================= */
+        
+        /* Khung danh sách chứa các thẻ */
+        .cards-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* Cấu trúc Thẻ Card (Container chính) */
+        .adaptive-card {
+            background-color: var(--bg-card);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--color-border);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden; /* Đảm bảo ảnh không lem ra khỏi góc bo */
+            transition: var(--transition-smooth);
+
+            /* ÁP DỤNG FLEXBOX: Mặc định Desktop: ảnh trái - chữ phải */
+            display: flex;
+            flex-direction: row;
+            align-items: stretch;
+        }
+
+        /* Hiệu ứng nổi bật khi rê chuột (Hover) */
+        .adaptive-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(27, 67, 50, 0.25);
+        }
+
+        /* Khối chứa ảnh (Image Wrapper) */
+        .card-image-wrapper {
+            /* Trên Desktop: Ảnh chiếm cố định 42% chiều rộng của Card */
+            flex: 0 0 42%;
+            position: relative;
+            overflow: hidden;
+            background-color: #e5e0d8;
+            min-height: 260px;
+        }
+
+        /* Thẻ ảnh phản hồi (Responsive Image) từ mã nguồn mở Unsplash */
+        .card-image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Giữ tỷ lệ ảnh chuẩn không bị méo */
+            display: block;
+            transition: transform 0.6s ease;
+        }
+
+        .adaptive-card:hover .card-image-wrapper img {
+            transform: scale(1.06); /* Zoom nhẹ khi hover tạo cảm giác sang trọng */
+        }
+
+        /* Tag danh mục nổi góc ảnh */
+        .card-category-badge {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: rgba(27, 67, 50, 0.88);
+            color: #fff;
+            padding: 0.35rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            border-radius: 4px;
+            backdrop-filter: blur(4px);
+            z-index: 2;
+        }
+
+        /* Khối chứa nội dung chữ (Content Wrapper) */
+        .card-content-wrapper {
+            /* Chiếm toàn bộ phần còn lại (58%) */
+            flex: 1;
+            padding: 2.25rem 2.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Siêu dữ liệu: Ngày đăng, Thời gian đọc */
+        .card-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .card-meta-dot {
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background-color: var(--color-accent);
+        }
+
+        /* Tiêu đề bài viết trong Card */
+        .card-title {
+            font-size: 1.45rem;
+            margin-bottom: 0.85rem;
+            transition: color 0.2s ease;
+        }
+
+        .adaptive-card:hover .card-title {
+            color: var(--color-primary-hover);
+        }
+
+        /* Đoạn văn bản mô tả tóm tắt */
+        .card-excerpt {
+            font-size: 0.98rem;
+            color: var(--color-text-muted);
+            margin-bottom: 1.5rem;
+            line-height: 1.7;
+        }
+
+        /* Phần chân thẻ (Footer): Tác giả & Nút bấm */
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--color-border);
+            margin-top: auto;
+        }
+
+        .author-info {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+        }
+
+        .author-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--color-accent);
+        }
+
+        .author-name {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--color-text-main);
+        }
+
+        .author-role {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+        }
+
+        /* Nút xem chi tiết (Call To Action) */
+        .btn-read-more {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.55rem 1.15rem;
+            border-radius: var(--radius-sm);
+            background-color: var(--color-primary);
+            color: #ffffff;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: var(--transition-smooth);
+        }
+
+        .btn-read-more:hover {
+            background-color: var(--color-primary-hover);
+            gap: 0.65rem; /* Hiệu ứng mũi tên trượt */
+        }
+
+        /* =========================================================
+           5. MEDIA QUERIES: ĐÁP ỨNG THIẾT BỊ DI ĐỘNG (MOBILE)
+           Yêu cầu đề bài 2: 
+           - Trên Mobile: ảnh TRÊN - chữ DƯỚI (flex-direction: column)
+           ========================================================= */
+        @media (max-width: 768px) {
+            .container {
+                margin-top: 1.5rem;
+                padding: 0 1rem;
+            }
+
+            .intro-section h1 {
+                font-size: 1.6rem;
+            }
+
+            /* CHUYỂN BỐ CỤC CARD THÀNH CỘT (ẢNH TRÊN - CHỮ DƯỚI) */
+            .adaptive-card {
+                flex-direction: column; /* Đổi hướng Flexbox từ row sang column */
+            }
+
+            .card-image-wrapper {
+                flex: none;
+                width: 100%;
+                height: 220px; /* Chiều cao cố định cân đối trên điện thoại */
+                min-height: auto;
+            }
+
+            .card-content-wrapper {
+                padding: 1.5rem 1.25rem;
+            }
+
+            .card-title {
+                font-size: 1.25rem;
+            }
+
+            .card-footer {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .btn-read-more {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Ghi chú footer */
+        .page-footer {
+            margin-top: 3.5rem;
+            text-align: center;
+            font-size: 0.875rem;
+            color: var(--color-text-muted);
+            border-top: 1px solid var(--color-border);
+            padding-top: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- THANH HEADER ĐIỀU HƯỚNG VÀ THÔNG TIN TÁC GIẢ -->
+    <header class="site-header">
+        <div class="header-inner">
+            <div class="brand-title">
+                🌿 <strong>TẠP CHÍ THIẾT KẾ XANH</strong> <span>•</span> KHOA HỌC & ĐỜI SỐNG
+            </div>
+            <div class="author-badge">
+                Tác giả: Phạm Hồng Hải Đăng (Tuần 4)
+            </div>
+        </div>
+    </header>
+
+    <!-- NỘI DUNG CHÍNH (MAIN CONTAINER) -->
+    <main class="container">
+
+        <!-- Giới thiệu đề bài và tiêu chuẩn -->
+        <section class="intro-section">
+            <h1>BÀI 2: ADAPTIVE CARD LAYOUT</h1>
+            <p>Thiết kế Card thích ứng hoàn hảo với Flexbox: Tự động đổi bố cục mượt mà giữa Desktop và Di động.</p>
+            <div class="requirement-callout">
+                💡 <strong>Quy chuẩn Flexbox:</strong> Desktop (Ảnh bên trái – Chữ bên phải) &nbsp;⇄&nbsp; Mobile (Ảnh ở trên – Chữ ở dưới)
+            </div>
+        </section>
+
+        <!-- DANH SÁCH CÁC THẺ CARD ADAPTIVE -->
+        <div class="cards-stack">
+
+            <!-- THẺ CARD 1: KIẾN TRÚC BỀN VỮNG -->
+            <article class="adaptive-card">
+                <!-- 1. Vùng ảnh đại diện (Ảnh mở từ Unsplash) -->
+                <div class="card-image-wrapper">
+                    <span class="card-category-badge">Kiến trúc xanh</span>
+                    <img src="https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=1000&q=80" 
+                         alt="Nhà gỗ tối giản hòa mình vào rừng thiên nhiên" 
+                         class="responsive-image"
+                         loading="lazy">
+                </div>
+
+                <!-- 2. Vùng nội dung thông tin -->
+                <div class="card-content-wrapper">
+                    <div class="card-meta">
+                        <span>21 Tháng 9, 2026</span>
+                        <span class="card-meta-dot"></span>
+                        <span>5 phút đọc</span>
+                    </div>
+
+                    <h2 class="card-title">Kiến Trúc Bền Vững: Khi Ngôi Nhà Trở Thành Một Phần Của Hệ Sinh Thái</h2>
+                    
+                    <p class="card-excerpt">
+                        Ứng dụng vật liệu tái sinh và năng lượng thụ động trong kiến trúc hiện đại giúp tiết kiệm đến 40% lượng điện tiêu thụ hàng năm, mang lại không gian tĩnh tại thuần khiết.
+                    </p>
+
+                    <div class="card-footer">
+                        <div class="author-info">
+                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" 
+                                 alt="Phạm Hồng Hải Đăng" 
+                                 class="author-avatar">
+                            <div>
+                                <div class="author-name">Phạm Hồng Hải Đăng</div>
+                                <div class="author-role">Biên tập viên Thiết kế</div>
+                            </div>
+                        </div>
+
+                        <a href="#read-more" class="btn-read-more">
+                            Đọc bài viết <span>→</span>
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- THẺ CARD 2: CÔNG NGHỆ & LỐI SỐNG TỐI GIẢN -->
+            <article class="adaptive-card">
+                <!-- 1. Vùng ảnh đại diện -->
+                <div class="card-image-wrapper">
+                    <span class="card-category-badge">Lối sống</span>
+                    <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1000&q=80" 
+                         alt="Không gian làm việc tối giản với cây xanh" 
+                         class="responsive-image"
+                         loading="lazy">
+                </div>
+
+                <!-- 2. Vùng nội dung thông tin -->
+                <div class="card-content-wrapper">
+                    <div class="card-meta">
+                        <span>18 Tháng 9, 2026</span>
+                        <span class="card-meta-dot"></span>
+                        <span>4 phút đọc</span>
+                    </div>
+
+                    <h2 class="card-title">Bố Cục Tối Giản Trong Không Gian Sống Của Người Trẻ Thế Hệ Mới</h2>
+                    
+                    <p class="card-excerpt">
+                        Loại bỏ những vật dụng không cần thiết và tối ưu ánh sáng tự nhiên không chỉ giải phóng diện tích sinh hoạt mà còn tái tạo năng lượng tích cực cho tinh thần mỗi ngày.
+                    </p>
+
+                    <div class="card-footer">
+                        <div class="author-info">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80" 
+                                 alt="Phạm Hồng Hải Đăng" 
+                                 class="author-avatar">
+                            <div>
+                                <div class="author-name">Phạm Hồng Hải Đăng</div>
+                                <div class="author-role">Chuyên gia Không gian</div>
+                            </div>
+                        </div>
+
+                        <a href="#read-more" class="btn-read-more">
+                            Đọc bài viết <span>→</span>
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+        </div>
+
+        <!-- Footer trang -->
+        <footer class="page-footer">
+            <p>Bài tập tự rèn luyện Tuần 4 - Thiết kế Web Chuẩn mực W3C</p>
+            <p>© 2026 Tác giả: <strong>Phạm Hồng Hải Đăng</strong>. Mọi quyền được bảo lưu.</p>
+        </footer>
+
+    </main>
+
+</body>
+</html>
