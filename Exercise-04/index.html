@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <!-- =========================================================
+         THÔNG TIN BẢN QUYỀN & CẤU HÌNH (METADATA)
+         Tác giả: Phạm Hồng Hải Đăng
+         Đề bài 4: Dark/Light Mode Theme (2 bộ biến màu, class .dark-theme, chuyển đổi mượt mà)
+         Môn học: Thiết kế Web - Tuần 4
+         ========================================================= -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Phạm Hồng Hải Đăng">
+    <meta name="description" content="Bài tập 4: Hệ thống Dark/Light Mode sử dụng 2 bộ biến CSS và chuyển đổi êm ái">
+    <title>Bài 4: Dark/Light Mode Theme - Phạm Hồng Hải Đăng</title>
+
+    <!-- Phông chữ Google Fonts cao cấp: Cinzel & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* =========================================================
+           1. BỘ BIẾN MÀU 1: CHẾ ĐỘ SÁNG MẶC ĐỊNH (:root)
+           Theo yêu cầu đề bài: Gắn cờ mặc định tại :root là Theme Sáng
+           ========================================================= */
+        :root {
+            /* Hệ màu Sáng (Warm Luxury Light Palette) */
+            --bg-page: #f6f3ed;             /* Nền trang be ấm trang nhã */
+            --bg-nav: rgba(246, 243, 237, 0.88); /* Kính mờ navbar sáng */
+            --bg-card: #ffffff;             /* Nền thẻ nội dung trắng tinh khôi */
+            --bg-card-sub: #faf8f5;         /* Nền khối phụ sáng */
+            --bg-badge: #e8efe9;            /* Nền nhãn tag xanh lá nhạt */
+
+            --color-primary: #1b4332;       /* Xanh lá rừng đậm sang trọng */
+            --color-primary-hover: #2d6a4f; /* Xanh thảo mộc khi hover */
+            --color-accent: #b78a48;        /* Vàng hổ phách điểm xuyết */
+            --color-text-main: #2d2926;     /* Màu than trầm dịu mắt */
+            --color-text-muted: #6c6760;    /* Xám nâu phụ đề */
+            --color-border: #e2dcd0;        /* Viền be tự nhiên */
+
+            /* Đổ bóng chế độ sáng */
+            --shadow-card: 0 10px 30px rgba(45, 41, 38, 0.07);
+            --shadow-button: 0 4px 14px rgba(27, 67, 50, 0.2);
+
+            /* Màu sắc nút chuyển đổi Theme Switcher */
+            --switch-bg: #e2dcd0;
+            --switch-thumb: #ffffff;
+            --switch-icon-sun: #b78a48;
+            --switch-icon-moon: #9e978e;
+            
+            /* Tên chế độ hiện tại hiển thị */
+            --theme-name-display: "Chế độ Sáng (Light Mode)";
+        }
+
+        /* =========================================================
+           2. BỘ BIẾN MÀU 2: CHẾ ĐỘ TỐI (.dark-theme)
+           Theo yêu cầu đề bài: Class .dark-theme ghi đè toàn bộ biến màu
+           ========================================================= */
+        body.dark-theme {
+            /* Hệ màu Tối (Deep Emerald & Obsidian Dark Palette) */
+            --bg-page: #0f1412;             /* Nền đen tuyền pha ánh lục thẫm */
+            --bg-nav: rgba(15, 20, 18, 0.9);/* Kính mờ navbar tối */
+            --bg-card: #18201b;             /* Nền thẻ card đen phiến đá sang trọng */
+            --bg-card-sub: #212c26;         /* Nền khối phụ tối */
+            --bg-badge: rgba(82, 183, 136, 0.15); /* Nền nhãn phát sáng nhẹ */
+
+            --color-primary: #52b788;       /* Xanh ngọc lục bảo rực rỡ, độ tương phản cao */
+            --color-primary-hover: #74c69d; /* Màu xanh sáng khi hover */
+            --color-accent: #e9c46a;        /* Vàng hoàng kim nổi bật trong đêm */
+            --color-text-main: #f2f4f2;     /* Trắng ngà dễ đọc không chói lóa */
+            --color-text-muted: #a4b0a6;    /* Xám bạc trang nhã */
+            --color-border: #29372e;        /* Viền tối huyền bí */
+
+            /* Đổ bóng chế độ tối sâu và có chiều sâu */
+            --shadow-card: 0 12px 35px rgba(0, 0, 0, 0.55);
+            --shadow-button: 0 4px 18px rgba(82, 183, 136, 0.35);
+
+            /* Màu sắc nút chuyển đổi Theme khi ở chế độ Tối */
+            --switch-bg: #2d6a4f;
+            --switch-thumb: #0f1412;
+            --switch-icon-sun: #6c7870;
+            --switch-icon-moon: #e9c46a;
+
+            --theme-name-display: "Chế độ Tối (Dark Mode)";
+        }
+
+        /* =========================================================
+           3. YÊU CẦU ĐỀ BÀI: CHUYỂN ĐỔI MƯỢT MÀ (SMOOTH TRANSITION)
+           Tất cả màu sắc, nền và viền thay đổi êm ái, không giật cục
+           ========================================================= */
+        body, 
+        header, 
+        article, 
+        section, 
+        div, 
+        h1, h2, h3, h4, 
+        p, span, 
+        button, a, 
+        .theme-switch-wrapper, 
+        .code-snippet {
+            transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                        color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                        border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                        box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* =========================================================
+           4. RESET CƠ BẢN & BỐ CỤC
+           ========================================================= */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-page);
+            color: var(--color-text-main);
+            line-height: 1.65;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Cinzel', serif;
+            color: var(--color-primary);
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* =========================================================
+           5. HEADER & NÚT CẦN GẠT CHUYỂN ĐỔI (THEME SWITCHER BUTTON)
+           ========================================================= */
+        .site-header {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            background: var(--bg-nav);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--color-border);
+            z-index: 100;
+            padding: 1rem 1.5rem;
+        }
+
+        .header-inner {
+            max-width: 1140px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .brand-logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            font-family: 'Cinzel', serif;
+            color: var(--color-primary);
+        }
+
+        .author-tag {
+            font-size: 0.8rem;
+            color: var(--color-primary);
+            background: var(--bg-badge);
+            padding: 0.3rem 0.75rem;
+            border-radius: 999px;
+            font-weight: 600;
+            border: 1px solid var(--color-border);
+        }
+
+        /* =========================================================
+           THIẾT KẾ NÚT BẤM CẦN GẠT (THEME TOGGLE BUTTON)
+           Chuẩn UX: Nút bấm có icon Mặt trời ☀️ / Mặt trăng 🌙
+           ========================================================= */
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+        .theme-state-text {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--color-text-muted);
+        }
+
+        /* Nút bấm chuyển đổi chính */
+        .btn-theme-toggle {
+            position: relative;
+            width: 68px;
+            height: 36px;
+            background-color: var(--switch-bg);
+            border: 2px solid var(--color-border);
+            border-radius: 999px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 7px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .btn-theme-toggle:focus-visible {
+            outline: 2px solid var(--color-primary);
+            outline-offset: 2px;
+        }
+
+        /* Con lăn chuyển động tròn bên trong nút gạt */
+        .toggle-knob {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 26px;
+            height: 26px;
+            background-color: var(--switch-thumb);
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.4s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        /* Khi ở class .dark-theme: Con lăn gạt sang phải mượt mà */
+        body.dark-theme .toggle-knob {
+            transform: translateX(32px);
+        }
+
+        .icon-sun {
+            color: var(--switch-icon-sun);
+            font-size: 0.95rem;
+            user-select: none;
+        }
+
+        .icon-moon {
+            color: var(--switch-icon-moon);
+            font-size: 0.9rem;
+            user-select: none;
+        }
+
+        /* =========================================================
+           6. KHU VỰC NỘI DUNG CHÍNH (MAIN CONTENT)
+           ========================================================= */
+        .container {
+            max-width: 1100px;
+            margin: 2.5rem auto 4rem;
+            padding: 0 1.5rem;
+        }
+
+        /* Hero Banner */
+        .hero-banner {
+            background-color: var(--bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: 20px;
+            padding: 3.5rem 2.5rem;
+            box-shadow: var(--shadow-card);
+            text-align: center;
+            margin-bottom: 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: var(--bg-badge);
+            color: var(--color-primary);
+            padding: 0.4rem 1.1rem;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .hero-banner h1 {
+            font-size: 2.4rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero-banner p {
+            font-size: 1.05rem;
+            color: var(--color-text-muted);
+            max-width: 720px;
+            margin: 0 auto 2rem;
+            line-height: 1.7;
+        }
+
+        /* Nút phụ tương tác thử nghiệm */
+        .interactive-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            background-color: var(--color-primary);
+            color: #ffffff;
+            font-weight: 600;
+            padding: 0.75rem 1.6rem;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            box-shadow: var(--shadow-button);
+            transition: var(--transition-smooth, all 0.3s ease);
+        }
+
+        body.dark-theme .interactive-cta {
+            color: #0f1412; /* Chữ tối trên nền xanh ngọc lục bảo phát sáng */
+        }
+
+        .interactive-cta:hover {
+            background-color: var(--color-primary-hover);
+            transform: translateY(-2px);
+        }
+
+        /* =========================================================
+           7. LƯỚI THẺ CARD MINH HỌA ĐỔI MÀU THÍCH ỨNG
+           ========================================================= */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.75rem;
+            margin-bottom: 3rem;
+        }
+
+        .feature-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow-card);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background-color: var(--bg-badge);
+            color: var(--color-primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-card p {
+            color: var(--color-text-muted);
+            font-size: 0.95rem;
+            line-height: 1.65;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-link {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--color-primary);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .feature-link:hover {
+            color: var(--color-primary-hover);
+            text-decoration: underline;
+        }
+
+        /* =========================================================
+           8. KHỐI TRÌNH DIỄN MÃ CSS VARIABLES (CODE SHOWCASE)
+           ========================================================= */
+        .code-section {
+            background-color: var(--bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow-card);
+        }
+
+        .code-section h2 {
+            font-size: 1.45rem;
+            margin-bottom: 1rem;
+        }
+
+        .code-snippet {
+            background-color: var(--bg-card-sub);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            font-family: 'Consolas', 'Fira Code', monospace;
+            font-size: 0.88rem;
+            overflow-x: auto;
+            line-height: 1.6;
+        }
+
+        .code-comment {
+            color: var(--color-text-muted);
+            font-style: italic;
+        }
+
+        .code-selector {
+            color: var(--color-accent);
+            font-weight: bold;
+        }
+
+        .code-var {
+            color: var(--color-primary);
+        }
+
+        /* =========================================================
+           9. FOOTER TRANG WEB
+           ========================================================= */
+        .site-footer {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: var(--color-text-muted);
+            font-size: 0.88rem;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .site-footer strong {
+            color: var(--color-primary);
+        }
+
+        /* Responsive Mobile */
+        @media (max-width: 600px) {
+            .hero-banner {
+                padding: 2.5rem 1.5rem;
+            }
+            .hero-banner h1 {
+                font-size: 1.75rem;
+            }
+            .header-inner {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- THANH HEADER VỚI NÚT CHUYỂN ĐỔI CHẾ ĐỘ SÁNG / TỐI -->
+    <header class="site-header">
+        <div class="header-inner">
+            
+            <div class="brand-box">
+                <span class="brand-logo">🌿 THIẾT KẾ XANH</span>
+                <span class="author-tag">Tác giả: Phạm Hồng Hải Đăng</span>
+            </div>
+
+            <!-- Nút bấm cần gạt chuyển đổi giao diện Sáng / Tối -->
+            <div class="theme-switch-wrapper">
+                <span class="theme-state-text" id="themeStatusText">Chế độ Sáng</span>
+                
+                <!-- Nút bấm kích hoạt hàm Javascript toggleTheme() -->
+                <button type="button" 
+                        class="btn-theme-toggle" 
+                        id="themeToggleButton" 
+                        onclick="toggleTheme()" 
+                        aria-label="Chuyển đổi giao diện Sáng hoặc Tối" 
+                        title="Bấm để chuyển Sáng / Tối">
+                    <span class="icon-sun">☀️</span>
+                    <span class="icon-moon">🌙</span>
+                    <span class="toggle-knob"></span>
+                </button>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- NỘI DUNG CHÍNH (MAIN CONTAINER) -->
+    <main class="container">
+
+        <!-- Banner Giới thiệu -->
+        <section class="hero-banner">
+            <span class="hero-badge">Tuần 4 • Bài tập 4: Dark / Light Mode</span>
+            <h1>QUẢN LÝ THEME BẰNG BIẾN CSS</h1>
+            <p>
+                Trang web sử dụng 2 bộ biến màu tại <code>:root</code> (Chế độ Sáng mặc định) và lớp <code>.dark-theme</code> (Ghi đè chế độ Tối). Mọi chuyển đổi màu sắc, độ bóng và viền đều diễn ra êm ái nhờ hiệu ứng <strong>CSS Transitions</strong>.
+            </p>
+
+            <button type="button" class="interactive-cta" onclick="toggleTheme()">
+                <span>⚡ Bấm vào đây để thử đổi Theme</span>
+            </button>
+        </section>
+
+        <!-- Lưới thẻ Card minh họa màu sắc biến đổi -->
+        <section class="features-grid">
+            
+            <!-- Thẻ Card 1 -->
+            <article class="feature-card">
+                <div>
+                    <div class="feature-icon">🎨</div>
+                    <h3>Kiến Trúc Biến Màu</h3>
+                    <p>
+                        Toàn bộ màu sắc từ nền trang, thẻ nội dung, chữ cho đến thanh điều hướng đều được tham chiếu qua các biến CSS <code>var(--bg-card)</code>, <code>var(--color-primary)</code>.
+                    </p>
+                </div>
+                <a href="#demo" class="feature-link">Tìm hiểu chi tiết →</a>
+            </article>
+
+            <!-- Thẻ Card 2 -->
+            <article class="feature-card">
+                <div>
+                    <div class="feature-icon">✨</div>
+                    <h3>Chuyển Đổi Mượt Mà</h3>
+                    <p>
+                        Nhờ thuộc tính <code>transition: 0.4s ease</code>, khi người dùng nhấp nút gạt, giao diện không hề bị chớp tắt đột ngột mà chuyển màu êm dịu, bảo vệ thị giác.
+                    </p>
+                </div>
+                <a href="#demo" class="feature-link">Xem cơ chế chuyển tiếp →</a>
+            </article>
+
+            <!-- Thẻ Card 3 -->
+            <article class="feature-card">
+                <div>
+                    <div class="feature-icon">💾</div>
+                    <h3>Ghi Nhớ Trạng Thái</h3>
+                    <p>
+                        Tích hợp <code>localStorage</code> giúp lưu lại lựa chọn của người dùng. Khi bạn F5 tải lại trang, giao diện vẫn giữ nguyên theme bạn đã chọn!
+                    </p>
+                </div>
+                <a href="#demo" class="feature-link">Khám phá LocalStorage →</a>
+            </article>
+
+        </section>
+
+        <!-- Trình diễn trực quan cách ghi đè biến CSS -->
+        <section class="code-section">
+            <h2>Mã Nguồn Cốt Lõi: Ghi Đè Biến CSS Giữa 2 Chế Độ</h2>
+            <div class="code-snippet">
+<span class="code-comment">/* 1. BỘ BIẾN MẶC ĐỊNH (SÁNG) TẠI :ROOT */</span>
+<span class="code-selector">:root</span> {
+    <span class="code-var">--bg-page:</span> #f6f3ed;         <span class="code-comment">/* Nền be ấm */</span>
+    <span class="code-var">--bg-card:</span> #ffffff;         <span class="code-comment">/* Nền thẻ trắng */</span>
+    <span class="code-var">--color-primary:</span> #1b4332;   <span class="code-comment">/* Xanh lá rừng đậm */</span>
+    <span class="code-var">--color-text-main:</span> #2d2926; <span class="code-comment">/* Chữ than đen */</span>
+}
+
+<span class="code-comment">/* 2. BỘ BIẾN CHẾ ĐỘ TỐI: GHI ĐÈ KHI BODY CÓ CLASS .dark-theme */</span>
+<span class="code-selector">body.dark-theme</span> {
+    <span class="code-var">--bg-page:</span> #0f1412;         <span class="code-comment">/* Nền đen ánh ngọc */</span>
+    <span class="code-var">--bg-card:</span> #18201b;         <span class="code-comment">/* Nền thẻ đen phiến đá */</span>
+    <span class="code-var">--color-primary:</span> #52b788;   <span class="code-comment">/* Xanh ngọc lục bảo tương phản cao */</span>
+    <span class="code-var">--color-text-main:</span> #f2f4f2; <span class="code-comment">/* Chữ sáng dịu mắt */</span>
+}
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER TRANG WEB -->
+    <footer class="site-footer">
+        <p>Bản quyền thuộc về: <strong>Phạm Hồng Hải Đăng</strong> • Bài tập 4: Dark/Light Mode Theme</p>
+        <p style="margin-top: 0.4rem;">Thiết kế Web Chuẩn mực Tuần 4 - Sử dụng CSS Variables & Semantic HTML5</p>
+    </footer>
+
+    <!-- =========================================================
+         10. JAVASCRIPT: ĐIỀU KHIỂN CHUYỂN ĐỔI BẰNG IF...ELSE
+         Đáp ứng đúng đề xuất của bạn: Dùng if..else để kiểm tra và
+         thêm/xóa class .dark-theme mỗi lần click nút
+         ========================================================= -->
+    <script>
+        // Hàm chuyển đổi chế độ Sáng / Tối (Theme Toggle)
+        function toggleTheme() {
+            const body = document.body;
+            const statusText = document.getElementById('themeStatusText');
+
+            // SỬ DỤNG CƠ CHẾ IF...ELSE THEO ĐÚNG Ý TƯỞNG CỦA BẠN:
+            if (body.classList.contains('dark-theme')) {
+                // Nếu hiện tại ĐANG LÀ TỐI -> Chuyển về SÁNG
+                body.classList.remove('dark-theme');
+                statusText.textContent = "Chế độ Sáng";
+                localStorage.setItem('user-theme', 'light'); // Lưu sở thích
+            } else {
+                // Nếu hiện tại ĐANG LÀ SÁNG -> Chuyển sang TỐI
+                body.classList.add('dark-theme');
+                statusText.textContent = "Chế độ Tối";
+                localStorage.setItem('user-theme', 'dark');  // Lưu sở thích
+            }
+        }
+
+        // Tự động khôi phục chế độ đã lưu khi tải lại trang web (F5)
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('user-theme');
+            const statusText = document.getElementById('themeStatusText');
+
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-theme');
+                statusText.textContent = "Chế độ Tối";
+            } else {
+                document.body.classList.remove('dark-theme');
+                statusText.textContent = "Chế độ Sáng";
+            }
+        });
+    </script>
+</body>
+</html>
