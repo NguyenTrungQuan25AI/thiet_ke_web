@@ -295,9 +295,27 @@
             align-items: center;
         }
 
+        /* Kỹ thuật Typing CSS Thuần: @keyframes typing + steps */
         .typing-text {
             display: inline-block;
             white-space: nowrap;
+            overflow: hidden;
+            border-right: 3px solid var(--color-primary); /* Con trỏ nhấp nháy */
+            width: 0;
+            animation: 
+                typingText 3.8s steps(28, end) infinite alternate,
+                blinkCursor 0.75s step-end infinite;
+        }
+
+        @keyframes typingText {
+            0% { width: 0; }
+            45%, 70% { width: 28ch; } /* Độ dài vừa vặn câu chữ */
+            100% { width: 0; }
+        }
+
+        @keyframes blinkCursor {
+            from, to { border-color: transparent; }
+            50% { border-color: var(--color-primary); }
         }
 
         .hero-desc {
