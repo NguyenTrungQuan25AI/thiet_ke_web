@@ -531,7 +531,7 @@
 
             /* THUỘC TÍNH CỐT LÕI CỦA PARALLAX EFFECT */
             background-image: url('https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=1600&q=80');
-            background-attachment: scroll; /* Khóa ảnh nền tạo cảm giác trôi chậm khi cuộn */
+            background-attachment: fixed; /* Khóa ảnh nền tạo cảm giác trôi chậm khi cuộn */
             background-position: center;
             background-repeat: no-repeat;
             background-size: cover;
@@ -705,7 +705,7 @@
             /* Trên màn hình di động, background-attachment: fixed một số máy lag nhẹ, 
                ta tối ưu sang cuộn tự nhiên hoặc giữ nguyên */
             .parallax-bento {
-                background-attachment: scroll;
+                background-attachment: fixed;
                 height: 320px;
             }
         }
