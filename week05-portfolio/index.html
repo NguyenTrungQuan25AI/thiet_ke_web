@@ -607,13 +607,26 @@
             position: relative;
         }
 
-        /* Thanh kỹ năng tĩnh cơ bản */
+        /* Thanh kỹ năng chạy với @keyframes */
         .skill-fill {
             height: 100%;
             border-radius: 999px;
-            background: var(--color-primary);
+            background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
             width: 0%;
+            will-change: width;
+            animation: fillBar 1.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
         }
+
+        /* Giá trị mục tiêu của từng thanh kỹ năng */
+        .skill-fill.html  { animation-name: fillHTML; animation-delay: 0.2s; }
+        .skill-fill.css   { animation-name: fillCSS; animation-delay: 0.35s; }
+        .skill-fill.js    { animation-name: fillJS; animation-delay: 0.5s; }
+        .skill-fill.uiux  { animation-name: fillUIUX; animation-delay: 0.65s; }
+
+        @keyframes fillHTML { to { width: 92%; } }
+        @keyframes fillCSS  { to { width: 95%; } }
+        @keyframes fillJS   { to { width: 85%; } }
+        @keyframes fillUIUX { to { width: 88%; } }
 
         /* =========================================================
            9. COMPONENT 6: DỰ ÁN & SỰ NGHIỆP BENTO
