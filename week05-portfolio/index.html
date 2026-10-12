@@ -397,7 +397,10 @@
         }
 
         /* Khi hover vào khung: Lật 180 độ theo trục Y */
-                /* 3D rotateY hover will be added here */
+        .flip-container:hover .flip-inner,
+        .flip-container:focus .flip-inner {
+            transform: rotateY(180deg);
+        }
 
         /* Hai mặt thẻ trước và sau */
         .flip-front, .flip-back {
