@@ -189,7 +189,18 @@
         }
 
         /* Trạng thái biến đổi thành dấu "X" mượt mà khi kích hoạt .is-active */
-                /* Hamburger active animation will be added here */
+        .hamburger-btn.is-active .hamburger-line:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+
+        .hamburger-btn.is-active .hamburger-line:nth-child(2) {
+            opacity: 0;
+            transform: scaleX(0);
+        }
+
+        .hamburger-btn.is-active .hamburger-line:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
 
         /* Menu trượt di động */
         .mobile-nav-panel {
