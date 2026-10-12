@@ -715,7 +715,105 @@
             margin-bottom: 1.5rem;
         }
 
-        /* FAB CSS will be added here */
+        /* =========================================================
+           11. COMPONENT 7: FLOATING ACTION BUTTON (FAB) (HIỆU ỨNG 1)
+           Theo yêu cầu chuẩn kiến trúc của bạn:
+           - Dùng W3C Semantic: Thẻ <aside class="floating-fab">
+           - Đặt SAU <footer>
+           - Nút tròn "Liên hệ" cố định góc màn hình với pulse animation
+           ========================================================= */
+        .floating-fab {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            z-index: 9999;
+        }
+
+        .fab-button {
+            position: relative;
+            width: 62px;
+            height: 62px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-accent), var(--color-primary));
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(27, 67, 50, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            transition: transform 0.3s var(--ease-spring), box-shadow 0.3s ease;
+        }
+
+        .fab-button:hover {
+            transform: scale(1.12);
+            box-shadow: 0 14px 30px rgba(27, 67, 50, 0.45);
+        }
+
+        /* VÒNG TRÒN PHẬP PHỒNG ĐẬP NHỊP TIM (PULSE RING ANIMATION) */
+        .fab-button::before {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 2px solid var(--color-accent);
+            opacity: 0.8;
+            will-change: transform, opacity;
+            animation: pulseWave 2.2s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+        }
+
+        .fab-button::after {
+            content: '';
+            position: absolute;
+            inset: -16px;
+            border-radius: 50%;
+            border: 1.5px solid var(--color-primary);
+            opacity: 0.4;
+            will-change: transform, opacity;
+            animation: pulseWave 2.2s cubic-bezier(0.25, 1, 0.5, 1) infinite 0.6s;
+        }
+
+        @keyframes pulseWave {
+            0% {
+                transform: scale(0.85);
+                opacity: 0.9;
+            }
+            70% {
+                transform: scale(1.35);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1.4);
+                opacity: 0;
+            }
+        }
+
+        /* Chú thích nổi bên cạnh nút FAB */
+        .fab-tooltip {
+            position: absolute;
+            right: 76px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(27, 67, 50, 0.95);
+            color: #ffffff;
+            padding: 0.45rem 0.9rem;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .floating-fab:hover .fab-tooltip {
+            opacity: 1;
+            visibility: visible;
+            right: 82px;
+        }
 
         /* =========================================================
            12. RESPONSIVE MEDIA QUERIES (MOBILE TỰ CO GIÃN)
@@ -729,7 +827,7 @@
             /* Trên màn hình di động, background-attachment: fixed một số máy lag nhẹ, 
                ta tối ưu sang cuộn tự nhiên hoặc giữ nguyên */
             .parallax-bento {
-                background-attachment: fixed;
+                background-attachment: scroll;
                 height: 320px;
             }
         }
@@ -994,7 +1092,20 @@
         </p>
     </footer>
 
-    <!-- FAB will be added in Component 7 -->
+    <!-- =========================================================
+         COMPONENT 7: FLOATING ACTION BUTTON (FAB) (HIỆU ỨNG 1)
+         Đặt SAU <footer> bằng thẻ W3C Semantic <aside class="floating-fab">
+         theo đúng chuẩn kiến trúc của bạn!
+         ========================================================= -->
+    <aside class="floating-fab" aria-label="Nút liên hệ nổi">
+        <button type="button" 
+                class="fab-button" 
+                aria-label="Liên hệ nhanh với Hải Đăng"
+                onclick="handleFabClick()">
+            <span>💬</span>
+        </button>
+        <span class="fab-tooltip">Liên hệ nhanh</span>
+    </aside>
 
     <!-- =========================================================
          JAVASCRIPT: TƯƠNG TÁC HAMBURGER & NÚT FAB
