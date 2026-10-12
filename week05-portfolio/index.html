@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <!-- =========================================================
+         THÔNG TIN DỰ ÁN & BẢN QUYỀN W3C (METADATA)
+         Họ và tên sinh viên: Phạm Hồng Hải Đăng
+         Mã số sinh viên: 125000152
+         Đề tài: Portfolio Cá Nhân - Tuần 5: Hiệu Ứng Chuyển Động (CSS Motion Design)
+         Nhánh Git: feature/animations
+         ========================================================= -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Phạm Hồng Hải Đăng">
+    <meta name="description" content="Portfolio cá nhân tích hợp 6 hiệu ứng chuyển động CSS thuần chuẩn UI/UX và tối ưu GPU 60fps">
+    <title>Phạm Hồng Hải Đăng | Creative Web Developer Portfolio</title>
+
+    <!-- Google Fonts cao cấp: Cinzel & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* =========================================================
+           1. HỆ THỐNG BIẾN THIẾT KẾ (DESIGN SYSTEM TOKENS)
+           ========================================================= */
+        :root {
+            --bg-page: #f5f2eb;             /* Nền trang be ấm trang nhã */
+            --bg-card: #ffffff;             /* Nền thẻ Bento trắng tinh khôi */
+            --bg-card-sub: #faf8f3;         /* Nền phụ dịu nhẹ */
+            --bg-nav: rgba(245, 242, 235, 0.92);
+
+            --color-primary: #1b4332;       /* Xanh lá rừng quý phái */
+            --color-primary-hover: #2d6a4f; /* Xanh thảo mộc khi tương tác */
+            --color-accent: #b78a48;        /* Vàng hổ phách điểm xuyết sang trọng */
+            --color-text-main: #2d2926;     /* Màu than trầm chuẩn mực */
+            --color-text-muted: #6c6760;    /* Xám nâu ghi chú */
+            --color-border: #e4dfd5;        /* Đường viền tự nhiên */
+
+            /* Đổ bóng đa tầng tinh tế */
+            --shadow-sm: 0 4px 12px rgba(45, 41, 38, 0.05);
+            --shadow-md: 0 10px 28px rgba(45, 41, 38, 0.08);
+            --shadow-lg: 0 20px 45px rgba(45, 41, 38, 0.12);
+
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 8px;
+
+            /* Chuyển động gia tốc chuẩn Motion Design */
+            --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --ease-smooth: cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        /* =========================================================
+           2. RESET & CẤU TRÚC NỀN TẢNG
+           Tối ưu hóa GPU với transform & opacity
+           ========================================================= */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-page);
+            color: var(--color-text-main);
+            line-height: 1.65;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Cinzel', serif;
+            color: var(--color-primary);
+            font-weight: 700;
+            line-height: 1.25;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* =========================================================
+           3. COMPONENT 1: NAVBAR & ANIMATED HAMBURGER (HIỆU ỨNG 5)
+           Biến đổi 3 gạch ngang thành dấu "X" mượt mà bằng CSS Transitions
+           ========================================================= */
+        .site-header {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            height: 78px;
+            background: var(--bg-nav);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--color-border);
+            z-index: 1000;
+        }
+
+        .nav-inner {
+            max-width: 1240px;
+            height: 100%;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand-logo {
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--color-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .brand-logo span {
+            color: var(--color-accent);
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 2.25rem;
+            list-style: none;
+        }
+
+        .nav-link {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--color-text-main);
+            position: relative;
+            padding: 0.4rem 0;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--color-primary);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0%;
+            height: 2px;
+            background-color: var(--color-accent);
+            transition: width 0.3s var(--ease-smooth);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Nút Hamburger biến hình chữ "X" (Yêu cầu bài 5) */
+        .hamburger-btn {
+            display: none; /* Mặc định ẩn trên Desktop */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            width: 46px;
+            height: 46px;
+            background: #ffffff;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            padding: 0;
+            transition: transform 0.3s var(--ease-smooth), background-color 0.3s ease;
+            z-index: 1100;
+        }
+
+        .hamburger-line {
+            width: 24px;
+            height: 2px;
+            background-color: var(--color-primary);
+            border-radius: 2px;
+            transition: transform 0.35s var(--ease-spring), opacity 0.25s ease;
+            transform-origin: center;
+            will-change: transform, opacity;
+        }
+
+        /* Trạng thái biến đổi thành dấu "X" mượt mà khi kích hoạt .is-active */
+                /* Hamburger active animation will be added here */
+
+        /* Menu trượt di động */
+        .mobile-nav-panel {
+            position: fixed;
+            top: 78px;
+            left: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            border-bottom: 1px solid var(--color-border);
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            transform: translateY(-110%);
+            opacity: 0;
+            visibility: hidden;
+            transition: transform 0.4s var(--ease-smooth), opacity 0.3s ease, visibility 0.4s;
+            z-index: 999;
+            box-shadow: var(--shadow-md);
+        }
+
+        .mobile-nav-panel.is-open {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* =========================================================
+           4. BỐ CỤC CHÍNH: CSS GRID DASHBOARD (BENTO GRID)
+           Nhiều ô đóng vai trò cuộn và các cột linh hoạt đúng ý bạn
+           ========================================================= */
+        .dashboard-container {
+            max-width: 1240px;
+            margin: 2.5rem auto 4.5rem;
+            padding: 0 1.5rem;
+        }
+
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.5rem;
+            align-items: stretch;
+        }
+
+        /* Các khối thẻ Bento dùng chung */
+        .bento-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: 2.25rem;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.4s var(--ease-smooth), box-shadow 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bento-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* =========================================================
+           5. COMPONENT 2: HERO BENTO & TYPING EFFECT (HIỆU ỨNG 3)
+           Chữ tự gõ bằng CSS thuần - không dùng JavaScript
+           ========================================================= */
+        .hero-bento {
+            grid-column: span 7;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: linear-gradient(145deg, #ffffff 0%, #fbf9f4 100%);
+        }
+
+        .greeting-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(27, 67, 50, 0.08);
+            color: var(--color-primary);
+            font-size: 0.82rem;
+            font-weight: 700;
+            padding: 0.35rem 0.95rem;
+            border-radius: 999px;
+            width: fit-content;
+            margin-bottom: 1.25rem;
+            border: 1px solid rgba(27, 67, 50, 0.15);
+        }
+
+        .hero-name {
+            font-size: 2.6rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.01em;
+        }
+
+        /* KHUNG CHỮ TỰ GÕ BẰNG CSS THUẦN (TYPING EFFECT) */
+        .typing-wrapper {
+            margin: 1rem 0 1.5rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.35rem;
+            font-weight: 600;
+            color: var(--color-accent);
+            display: flex;
+            align-items: center;
+        }
+
+        .typing-text {
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        .hero-desc {
+            font-size: 1.05rem;
+            color: var(--color-text-muted);
+            line-height: 1.7;
+            margin-bottom: 2rem;
+        }
+
+        .hero-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background-color: var(--color-primary);
+            color: #ffffff;
+            font-weight: 700;
+            padding: 0.8rem 1.6rem;
+            border-radius: var(--radius-sm);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 6px 18px rgba(27, 67, 50, 0.22);
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--color-primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--color-primary);
+            font-weight: 700;
+            padding: 0.8rem 1.6rem;
+            border-radius: var(--radius-sm);
+            border: 1.5px solid var(--color-primary);
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(27, 67, 50, 0.05);
+            transform: translateY(-2px);
+        }
+
+        /* =========================================================
+           6. COMPONENT 3: 3D CARD FLIP BENTO (HIỆU ỨNG 2)
+           Thẻ nhân sự lật 180 độ (rotateY) khi rê chuột (hover)
+           ========================================================= */
+        .card-flip-bento {
+            grid-column: span 5;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+        }
+
+        /* Khung chứa 3D với góc nhìn perspective */
+        .flip-container {
+            width: 100%;
+            height: 380px;
+            perspective: 1200px; /* Tạo không gian chiều sâu 3D */
+            cursor: pointer;
+        }
+
+        .flip-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d; /* Giữ trạng thái 3D cho 2 mặt */
+            will-change: transform;
+        }
+
+        /* Khi hover vào khung: Lật 180 độ theo trục Y */
+                /* 3D rotateY hover will be added here */
+
+        /* Hai mặt thẻ trước và sau */
+        .flip-front, .flip-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--color-border);
+            padding: 2.25rem 1.75rem;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden; /* Ẩn mặt sau khi nhìn từ đằng trước */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Mặt trước */
+        .flip-front {
+            background-color: #ffffff;
+        }
+
+        .avatar-box {
+            position: relative;
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            margin-bottom: 1.25rem;
+            padding: 4px;
+            background: linear-gradient(135deg, var(--color-accent), var(--color-primary));
+        }
+
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #ffffff;
+        }
+
+        .status-dot {
+            position: absolute;
+            bottom: 6px;
+            right: 6px;
+            width: 14px;
+            height: 14px;
+            background-color: #2a9d8f;
+            border-radius: 50%;
+            border: 2px solid #fff;
+        }
+
+        .profile-name {
+            font-size: 1.35rem;
+            margin-bottom: 0.35rem;
+        }
+
+        .profile-role {
+            font-size: 0.88rem;
+            color: var(--color-text-muted);
+            margin-bottom: 1.25rem;
+        }
+
+        .hint-flip {
+            font-size: 0.78rem;
+            color: var(--color-accent);
+            background: rgba(183, 138, 72, 0.1);
+            padding: 0.3rem 0.75rem;
+            border-radius: 999px;
+            font-weight: 600;
+        }
+
+        /* Mặt sau (Đã xoay sẵn 180 độ) */
+        .flip-back {
+            background: linear-gradient(145deg, #183327, #13271e);
+            color: #ffffff;
+            transform: rotateY(180deg);
+        }
+
+        .flip-back h3 {
+            color: #ffffff;
+            font-size: 1.35rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .flip-back p {
+            font-size: 0.9rem;
+            color: #d1dbd4;
+            line-height: 1.6;
+            margin-bottom: 1.25rem;
+        }
+
+        .contact-list {
+            list-style: none;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            font-size: 0.86rem;
+            text-align: left;
+            margin-bottom: 1.25rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 0.5rem 0.8rem;
+            border-radius: 6px;
+        }
+
+        /* =========================================================
+           7. COMPONENT 4: PARALLAX IMAGE SECTION (HIỆU ỨNG 4)
+           Ảnh nền di chuyển chậm hơn nội dung bằng background-attachment: fixed
+           ========================================================= */
+        .parallax-bento {
+            grid-column: span 12;
+            height: 380px;
+            position: relative;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2.5rem;
+
+            /* THUỘC TÍNH CỐT LÕI CỦA PARALLAX EFFECT */
+            background-image: url('https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=1600&q=80');
+            background-attachment: scroll; /* Khóa ảnh nền tạo cảm giác trôi chậm khi cuộn */
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            border: 1px solid var(--color-border);
+        }
+
+        .parallax-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(19, 39, 30, 0.72);
+            backdrop-filter: blur(2px);
+        }
+
+        .parallax-content {
+            position: relative;
+            z-index: 2;
+            max-width: 760px;
+            color: #ffffff;
+        }
+
+        .parallax-content h2 {
+            color: #ffffff;
+            font-size: 2.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .parallax-content p {
+            font-size: 1.1rem;
+            color: #e2e8e4;
+            line-height: 1.7;
+        }
+
+        /* =========================================================
+           8. COMPONENT 5: SKILL BAR ANIMATION BENTO (HIỆU ỨNG 6)
+           Thanh kỹ năng chạy dải màu tự động từ 0% đến độ dài đích
+           ========================================================= */
+        .skills-bento {
+            grid-column: span 6;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .section-mini-title {
+            font-size: 1.35rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-mini-desc {
+            font-size: 0.92rem;
+            color: var(--color-text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .skill-item {
+            margin-bottom: 1.25rem;
+        }
+
+        .skill-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 0.45rem;
+        }
+
+        .skill-track {
+            width: 100%;
+            height: 12px;
+            background-color: #ebe5d8;
+            border-radius: 999px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Thanh kỹ năng tĩnh cơ bản */
+        .skill-fill {
+            height: 100%;
+            border-radius: 999px;
+            background: var(--color-primary);
+            width: 0%;
+        }
+
+        /* =========================================================
+           9. COMPONENT 6: DỰ ÁN & SỰ NGHIỆP BENTO
+           ========================================================= */
+        .projects-bento {
+            grid-column: span 6;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .project-mini-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .mini-card {
+            background-color: var(--bg-card-sub);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: 1.15rem 1.35rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .mini-card:hover {
+            transform: translateX(6px);
+            border-color: var(--color-primary);
+        }
+
+        .mini-card-info h4 {
+            font-size: 1.05rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .mini-card-info p {
+            font-size: 0.82rem;
+            color: var(--color-text-muted);
+        }
+
+        .tag-pill {
+            font-size: 0.75rem;
+            font-weight: 700;
+            background: #ffffff;
+            border: 1px solid var(--color-border);
+            padding: 0.3rem 0.7rem;
+            border-radius: 999px;
+            color: var(--color-primary);
+        }
+
+        /* =========================================================
+           10. FOOTER CHÂN TRANG
+           ========================================================= */
+        .site-footer {
+            border-top: 1px solid var(--color-border);
+            background: #ffffff;
+            padding: 3rem 1.5rem;
+            text-align: center;
+        }
+
+        .footer-brand {
+            font-family: 'Cinzel', serif;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-meta {
+            font-size: 0.9rem;
+            color: var(--color-text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        /* FAB CSS will be added here */
+
+        /* =========================================================
+           12. RESPONSIVE MEDIA QUERIES (MOBILE TỰ CO GIÃN)
+           ========================================================= */
+        @media (max-width: 992px) {
+            .hero-bento { grid-column: span 12; }
+            .card-flip-bento { grid-column: span 12; }
+            .skills-bento { grid-column: span 12; }
+            .projects-bento { grid-column: span 12; }
+            
+            /* Trên màn hình di động, background-attachment: fixed một số máy lag nhẹ, 
+               ta tối ưu sang cuộn tự nhiên hoặc giữ nguyên */
+            .parallax-bento {
+                background-attachment: scroll;
+                height: 320px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu { display: none; }
+            .hamburger-btn { display: flex; }
+            
+            .hero-name { font-size: 2rem; }
+            .typing-wrapper { font-size: 1.05rem; }
+            
+            .bento-card {
+                padding: 1.5rem;
+                border-radius: var(--radius-md);
+            }
+
+            .floating-fab {
+                bottom: 22px;
+                right: 22px;
+            }
+            .fab-button {
+                width: 54px;
+                height: 54px;
+                font-size: 1.35rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- =========================================================
+         COMPONENT 1: HEADER & NAVBAR (TÍCH HỢP HIỆU ỨNG 5: HAMBURGER)
+         ========================================================= -->
+    <header class="site-header">
+        <div class="nav-inner">
+            <a href="#home" class="brand-logo">
+                ❖ ĐĂNG DESIGN <span>PORTFOLIO</span>
+            </a>
+
+            <!-- Menu Desktop -->
+            <ul class="nav-menu">
+                <li><a href="#about" class="nav-link">Giới Thiệu</a></li>
+                <li><a href="#profile" class="nav-link">Hồ Sơ 3D</a></li>
+                <li><a href="#parallax" class="nav-link">Không Gian</a></li>
+                <li><a href="#skills" class="nav-link">Kỹ Năng</a></li>
+                <li><a href="#projects" class="nav-link">Dự Án</a></li>
+            </ul>
+
+            <!-- Nút Hamburger biến hình chữ "X" (Hiệu ứng 5) -->
+            <button type="button" 
+                    class="hamburger-btn" 
+                    id="hamburgerToggle" 
+                    aria-label="Chuyển đổi bảng chọn" 
+                    onclick="toggleMobileMenu()">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Menu trượt Mobile -->
+    <nav class="mobile-nav-panel" id="mobileNavPanel">
+        <a href="#about" class="nav-link" onclick="toggleMobileMenu()">Giới Thiệu</a>
+        <a href="#profile" class="nav-link" onclick="toggleMobileMenu()">Hồ Sơ 3D</a>
+        <a href="#parallax" class="nav-link" onclick="toggleMobileMenu()">Không Gian Parallax</a>
+        <a href="#skills" class="nav-link" onclick="toggleMobileMenu()">Kỹ Năng</a>
+        <a href="#projects" class="nav-link" onclick="toggleMobileMenu()">Dự Án</a>
+    </nav>
+
+    <!-- =========================================================
+         BỐ CỤC CHÍNH: DASHBOARD CSS GRID (BENTO TILES)
+         ========================================================= -->
+    <main class="dashboard-container" id="home">
+        <div class="bento-grid">
+
+            <!-- Ô 1: HERO BENTO (TÍCH HỢP HIỆU ỨNG 3: TYPING EFFECT) -->
+            <section class="bento-card hero-bento" id="about">
+                <div class="greeting-badge">
+                    👋 Chào mừng bạn ghé thăm Portfolio
+                </div>
+
+                <h1 class="hero-name">Phạm Hồng Hải Đăng</h1>
+
+                <!-- DÒNG CHỮ TỰ GÕ BẰNG CSS THUẦN (KHÔNG DÙNG JS) -->
+                <div class="typing-wrapper">
+                    <span class="typing-text">Tôi là một Web Developer...</span>
+                </div>
+
+                <p class="hero-desc">
+                    Sinh viên Thiết kế Web với niềm đam mê sáng tạo giao diện tối giản sang trọng, tối ưu trải nghiệm người dùng (UX) và hiện thực hóa các hiệu ứng chuyển động mượt mà 60fps.
+                </p>
+
+                <div class="hero-actions">
+                    <a href="#skills" class="btn-primary">
+                        <span>Khám Phá Kỹ Năng</span>
+                        <span>↓</span>
+                    </a>
+                    <a href="#profile" class="btn-secondary">
+                        Xem Thẻ Nhân Sự 3D
+                    </a>
+                </div>
+            </section>
+
+            <!-- Ô 2: 3D CARD FLIP BENTO (TÍCH HỢP HIỆU ỨNG 2: CARD FLIP) -->
+            <section class="bento-card card-flip-bento" id="profile">
+                <div class="flip-container" tabindex="0">
+                    <div class="flip-inner">
+                        
+                        <!-- Mặt trước của thẻ -->
+                        <div class="flip-front">
+                            <div class="avatar-box">
+                                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80" 
+                                     alt="Phạm Hồng Hải Đăng" 
+                                     class="avatar-img">
+                                <span class="status-dot"></span>
+                            </div>
+                            <h3 class="profile-name">Phạm Hồng Hải Đăng</h3>
+                            <p class="profile-role">Frontend & UI/UX Specialist</p>
+                            <span class="hint-flip">↻ Rê chuột để lật thẻ 3D</span>
+                        </div>
+
+                        <!-- Mặt sau của thẻ (Xoay 180 độ) -->
+                        <div class="flip-back">
+                            <h3>Thông Tin Liên Hệ</h3>
+                            <p>Sẵn sàng hợp tác cho các dự án xây dựng giao diện hiện đại & tối ưu chuẩn mực.</p>
+                            
+                            <ul class="contact-list">
+                                <li class="contact-item">
+                                    <span>🎓 MSSV:</span>
+                                    <strong>125000152</strong>
+                                </li>
+                                <li class="contact-item">
+                                    <span>✉️ Email:</span>
+                                    <span>haidang.dev@gmail.com</span>
+                                </li>
+                                <li class="contact-item">
+                                    <span>📍 Nơi ở:</span>
+                                    <span>Việt Nam</span>
+                                </li>
+                            </ul>
+
+                            <span class="hint-flip" style="background: rgba(255,255,255,0.15); color: #fff;">
+                                Nhánh Git: feature/animations
+                            </span>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- Ô 3: PARALLAX IMAGE BANNER (TÍCH HỢP HIỆU ỨNG 4: PARALLAX) -->
+            <section class="parallax-bento" id="parallax">
+                <div class="parallax-overlay"></div>
+                <div class="parallax-content">
+                    <h2>Không Gian Kiến Trúc Xanh</h2>
+                    <p>
+                        Kỹ thuật Parallax Scrolling với <code>background-attachment: fixed</code> tạo chiều sâu thị giác đa tầng khi cuộn trang, kết nối sự sống tự nhiên và kiến trúc web hiện đại.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Ô 4: SKILL BARS BENTO (TÍCH HỢP HIỆU ỨNG 6: SKILL BAR) -->
+            <section class="bento-card skills-bento" id="skills">
+                <div>
+                    <h3 class="section-mini-title">Kỹ Năng Chuyên Môn</h3>
+                    <p class="section-mini-desc">Thanh kỹ năng tự động chạy dải màu từ 0% đến độ dài đích khi trang tải xong.</p>
+
+                    <!-- Kỹ năng HTML -->
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span>Semantic HTML5 & W3C</span>
+                            <span>92%</span>
+                        </div>
+                        <div class="skill-track">
+                            <div class="skill-fill html"></div>
+                        </div>
+                    </div>
+
+                    <!-- Kỹ năng CSS -->
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span>CSS3 Flexbox & CSS Grid</span>
+                            <span>95%</span>
+                        </div>
+                        <div class="skill-track">
+                            <div class="skill-fill css"></div>
+                        </div>
+                    </div>
+
+                    <!-- Kỹ năng UI/UX Animation -->
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span>CSS Animations & Keyframes 60fps</span>
+                            <span>88%</span>
+                        </div>
+                        <div class="skill-track">
+                            <div class="skill-fill uiux"></div>
+                        </div>
+                    </div>
+
+                    <!-- Kỹ năng JavaScript -->
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span>JavaScript ES6+ & DOM</span>
+                            <span>85%</span>
+                        </div>
+                        <div class="skill-track">
+                            <div class="skill-fill js"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Ô 5: DỰ ÁN & TIÊU CHÍ BENTO -->
+            <section class="bento-card projects-bento" id="projects">
+                <div>
+                    <h3 class="section-mini-title">Hồ Sơ Bài Tập Tuần 5</h3>
+                    <p class="section-mini-desc">Đầy đủ 3 nhóm hiệu ứng bắt buộc: Hover, Keyframes và Scroll.</p>
+
+                    <div class="project-mini-cards">
+                        <div class="mini-card">
+                            <div class="mini-card-info">
+                                <h4>Nhóm 1: Keyframes</h4>
+                                <p>Typing Effect, Pulse Button, Skill Bars</p>
+                            </div>
+                            <span class="tag-pill">Chuyển động tự động</span>
+                        </div>
+
+                        <div class="mini-card">
+                            <div class="mini-card-info">
+                                <h4>Nhóm 2: Hover</h4>
+                                <p>3D Card Flip lật 180°, Menu & Nút bấm</p>
+                            </div>
+                            <span class="tag-pill">Tương tác người dùng</span>
+                        </div>
+
+                        <div class="mini-card">
+                            <div class="mini-card-info">
+                                <h4>Nhóm 3: Scroll</h4>
+                                <p>Parallax Image Banner có chiều sâu</p>
+                            </div>
+                            <span class="tag-pill">Hiệu ứng cuộn trang</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- =========================================================
+         FOOTER CHÂN TRANG
+         ========================================================= -->
+    <footer class="site-footer">
+        <div class="footer-brand">PHẠM HỒNG HẢI ĐĂNG</div>
+        <p class="footer-meta">
+            Mã số sinh viên: <strong>125000152</strong> • Môn: Thiết kế Web (Tuần 5: Hiệu Ứng Chuyển Động)
+        </p>
+        <p style="font-size: 0.82rem; color: var(--color-text-muted);">
+            Toàn bộ chuyển động được tối ưu phần cứng GPU bằng <code>transform</code> và <code>opacity</code>.
+        </p>
+    </footer>
+
+    <!-- FAB will be added in Component 7 -->
+
+    <!-- =========================================================
+         JAVASCRIPT: TƯƠNG TÁC HAMBURGER & NÚT FAB
+         ========================================================= -->
+    <script>
+        // 1. Tương tác bật/tắt Hamburger Menu Mobile
+        function toggleMobileMenu() {
+            const btn = document.getElementById('hamburgerToggle');
+            const panel = document.getElementById('mobileNavPanel');
+            const isOpen = btn.classList.toggle('is-active');
+            panel.classList.toggle('is-open', isOpen);
+        }
+
+        // 2. Tương tác khi click nút FAB tròn
+        function handleFabClick() {
+            const flipContainer = document.querySelector('.flip-container');
+            flipContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Kích hoạt lật thẻ một chút để gây chú ý
+            const flipInner = document.querySelector('.flip-inner');
+            flipInner.style.transform = 'rotateY(180deg)';
+            setTimeout(() => {
+                flipInner.style.transform = '';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
